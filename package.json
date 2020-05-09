@@ -1,0 +1,22 @@
+{
+  "name": "project5_coursesystem",
+  "version": "1.0.0",
+  "description": "選課系統專案，模擬一個選課系統，可以讓學生、老師登入，學生可以選退課程、修改密碼；老師可以導入學生資訊，並提供學生登入密碼之類的。",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cookie-parser": "^1.4.5",
+    "dateformat": "^3.0.3",
+    "ejs": "^3.0.2",
+    "express": "^4.17.1",
+    "express-session": "^1.17.0",
+    "formidable": "^1.2.2",
+    "mongodb": "^3.5.5",
+    "mongoose": "^5.9.7",
+    "node-xlsx": "^0.15.0"
+  }
+}

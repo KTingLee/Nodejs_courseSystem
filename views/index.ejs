@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html class='no-js' lang='en'>
+
+<head>
+    <meta charset='utf-8'>
+    <meta content='IE=edge,chrome=1' http-equiv='X-UA-Compatible'>
+    <title>管理員面板 - 選課系統</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet" type ="text/css"/>
+    <script src="/js/jquery.min.js" type="text/javascript"></script>
+    
+    <style>
+        .btn.disabled, .btn:disabled {
+            opacity: 0.5;
+            cursor: no-drop;
+        }
+        .btn-danger {
+            margin-top: 4px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <%- include ("./include/user_template.ejs") %>
+
+    <div class="col-lg-12">
+        <div class="container-fluid">
+            <table class="table" id="coursesTable">
+                <tr>
+                    <th style="width:100px;">課程代碼</th>
+                    <th style="width:180px;">課程名稱</th>
+                    <th style="width:100px;">課程日期</th>
+                    <th style="width:120px;">開課教授</th>
+                    <th style="width:150px;">限制年級</th>
+                    <th style="width:100px;">剩餘人數</th>
+                    <th >課程簡介</th>
+                    <th></th>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+<script type="text/javascript">
+    // 課程清單可透過 Ajax 接口獲得(路由: /coursesData)資料，再透過 jQuery 語法生成元素，並附加至課程表格中
+    // 但各課程的選擇狀況會依不同學生而不同，所以要先獲得 "各課程對於學生" 的選擇狀況
+    $.get("/checkCourses", function(coursesCondition){
+
+        // 再製作各課程的表格
+        $.get("/coursesData", function(coursesData){
+            // 遍歷 coursesData
+            $.each(coursesData.rows, function(index, item){
+                // 利用 jQuery 建立元素
+                var $tr = $("<tr></tr>");
+
+                $tr.append("<td>" + item.cid + "</td>");
+                $tr.append("<td>" + item.Name + "</td>");
+                $tr.append("<td>" + item.courseDay + "</td>");
+                $tr.append("<td>" + item.teacher + "</td>");
+                $tr.append("<td>" + item.allow + "</td>");
+                $tr.append("<td>" + item.member + "</td>");
+                $tr.append("<td>" + item.intro + "</td>");
+                $tr.append("<td style='vertical-align: inherit;'><input type='button' class='btn' value='' id='cBtn" + item.cid + "' data-cid='" + item.cid + "' ></td>");
+
+                // 將最後結果附加至表格中
+                $tr.appendTo($("#coursesTable"));
+
+                // 依照課程況狀，修改課程按鈕的樣式
+                // 加上按鈕名稱
+                $("#cBtn" + item.cid).val(coursesCondition[item.cid]);
+                // 修改樣式
+                if(coursesCondition[item.cid] == "報名"){
+                    $("#cBtn" + item.cid).addClass("btn-success getCourse");
+
+                }else if(coursesCondition[item.cid] == "已選課程"){
+                    $("#cBtn" + item.cid).addClass("btn-info").attr("disabled", true);
+                    $("#cBtn" + item.cid).after($("<p><td style='vertical-align: inherit;'><input type='button' class='btn btn-danger dropCourse' value='退選課程' id='dropBtn" + item.cid + "' data-cid='" + item.cid + "' ></td>"))
+
+                }else{
+                    $("#cBtn" + item.cid).addClass("btn-secondary").attr("disabled", true);
+                }
+            })
+        })
+    })
+
+    // 監聽報名按鈕，因為是動態產生的按鈕，所以利用 delegate() 委託函數(委託父元素)
+    $("#coursesTable").delegate(".getCourse", "click", function(){
+        $.post("/getCourse", {
+            "cid" : $(this).attr("data-cid")
+        }, function(mes){
+            if(mes.results == 1){
+                alert("報名成功！")
+                window.location.reload();
+            }else{
+                alert("報名失敗！")
+            }
+        })
+    })
+
+    // 監聽退選按鈕，因為是動態產生的按鈕，所以利用 delegate() 委託函數(委託父元素)
+    $("#coursesTable").delegate(".dropCourse", "click", function(){
+        $.post("/dropCourse", {
+            "cid" : $(this).attr("data-cid")
+        }, function(mes){
+            if(mes.results == 1){
+                alert("退選成功！")
+                window.location.reload();
+            }else{
+                alert("退選失敗！")
+            }
+        })
+    })
+    
+</script>
+
+</body>
+</html>

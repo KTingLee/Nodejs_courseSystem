@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登入頁面 - 逞大選課系統</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet" type ="text/css"/>
+    <script src="/js/jquery.min.js" type="text/javascript"></script>
+    <style>
+        html, body{
+            height: 100%;
+        }
+        body{
+            background: url("/images/login_pic.jpg") center right;
+            background-size: cover;
+            padding: 20px;
+        }
+        .loginbox{
+            background-color: rgba(255, 255, 255, 0.4);
+            padding: 10px;
+            font-size: larger;
+        }
+        .container {
+            width: 100%;
+            padding-right: 15px;
+            padding-left: 15px;
+            margin-right: auto;
+            margin-left: 4%;
+            margin-top: 3%;
+        }
+        .myalert2{
+            padding: 4px;
+            margin-top: 4px;
+            width: inherit;
+            display: inherit;
+        }
+    </style>
+</head>
+<body>
+
+
+<div class="container">
+    <h2>請輸入員工識別證號或學號</h2>
+    <hr/>
+    <div class="row">
+        <div class="col-md-6 loginbox">
+
+            <p>
+                帳號：
+            </p>
+            <p>
+                <input type="text" class="form-control" id="userID" checkValid>
+                <span class="alert myalert2 alert-danger">帳號不能為空。</span>
+            </p>
+            <p>
+                密碼：
+            </p>
+            <p>
+                <input type="password" class="form-control" id="userPassword" checkValid>
+            </p>
+            <input type="button" class="btn btn-success" value="登入" disabled="disabled" id="loginBtn">
+        </div>
+
+    </div>
+</div>
+
+
+<!-- 以 Ajax 提交帳號密碼 -->
+<script type='text/javascript'>
+    // 當帳號框輸入時(focus 事件)，警示框要隱藏
+    $("#userID").focus(function(){
+        $(this).next().hide();
+    })
+
+    // 當帳號框 blur 時，檢查是否有輸入帳號，若沒有就跳警示
+    $("#userID").blur(function(){
+        if($(this).val() == ''){
+            $(this).next().show().html('帳號不能為空。');
+        }
+    })
+
+    // 檢查含有 checkValid 屬性的元素是否都有值(只要任一輸入框 blur 就檢查)
+    $("[checkValid]").blur(function(){
+        if($("#userID").val() != '' && $("#userPassword").val() != ''){
+            $("#loginBtn").attr("disabled", false);
+        }else{
+            $("#loginBtn").attr("disabled", true);
+        }
+    })
+
+    // 登入按鈕點擊時，發送表單
+    $("#loginBtn").click(function(){
+        var userID = $("#userID").val();
+        var userPassword = $("#userPassword").val();
+
+        $.post('/login', {
+            "userID" : userID,
+            "userPassword" : userPassword
+        }, function(mes){
+            if(mes.results == 1){
+                alert("登入成功，即將跳轉頁面");
+                // 進行跳轉
+                window.location = "/";
+            }else if(mes.results == -1){
+                alert("伺服器錯誤")
+            }else{
+                $("#userID").next().show().html("帳號或密碼錯誤！")
+            }
+        })
+    })
+</script>
+</body>
+</html>

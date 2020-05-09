@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html class='no-js' lang='en'>
+
+<head>
+    <meta charset='utf-8'>
+    <meta content='IE=edge,chrome=1' http-equiv='X-UA-Compatible'>
+    <title>管理員面板 - 選課系統</title>
+    <%- include ("../../include/includeFiles.ejs") %>
+    <link rel="stylesheet" href="/css/tip-yellow.css" type="text/css" />
+    <script type="text/javascript" src="/js/jquery.poshytip.min.js"></script>
+</head>
+
+<body class='main page'>
+
+    <!-- Navbar -->
+    <%- include ("../../include/navBar.ejs") %>
+
+    <div id='wrapper'>
+        <!-- Sidebar -->
+        <%- include ("../../include/sidebar.ejs") %>
+        
+        <!-- Tools -->
+        <section id='tools'>
+            <ul class='breadcrumb' id='breadcrumb'>
+                <li class='active'>課程清單</li>
+                <li><a href="/admin/courses/import">導入課程</a></li>
+                <li><a href="/admin/courses/add">新增課程</a></li>
+            </ul>
+        </section>
+        <!-- Content -->
+        <div id='content'>
+            <div class='panel panel-default'>
+                <div class='panel-heading'>
+                    <i class='icon-beer icon-large'></i>
+                        <a>
+                            所有課程
+                        </a>
+                    <a id="poshytip_tip" ></a>
+
+                    <div class='panel-tools'>
+                    </div>
+                </div>
+
+                <div class='panel-body'>
+                    <!-- 課程清單 -->
+                    <div class='row searchBox'>
+                        <div class="col-md-4">
+                            快速查詢：<input type="text" placeholder="  例如輸入 工程" id="quickSearch">
+                        </div>
+                    </div>
+                    <%- include ("./courseListTemplate/courseList.ejs") %>
+                </div>
+            </div>
+            <input type="button" class="btn btn-danger" value="刪除" id="delBtn">
+
+        </div>
+    </div>
+
+
+<script>
+    /* 課程資料被修改後，會執行提示框，這邊是提示框的參數 */
+    function showTip(content){
+        $('#poshytip_tip').poshytip({
+            content: content,
+            showOn: 'none',
+            alignTo: 'target',
+            alignX: 'right',
+            alignY: 'center'
+        });
+        $('#poshytip_tip').poshytip('show').poshytip('hideDelayed', 500);
+    }
+
+
+    /* 監聽刪除按鈕 */
+    $("#delBtn").click(function(){
+        // 獲得所選的學生資料，這邊如果學號的欄位有提供 key:true，就不用再自己抓學號了
+        var arr = $("#coursesTable").jqGrid('getGridParam', 'selarrrow');
+        var cid_arr = [];
+        for(let i = 0; i < arr.length; i++){
+            cid_arr.push($('#coursesTable').getCell(arr[i], 1));
+        }
+
+        // 刪除前先詢問，記得若回應是取消，則要回傳 false！
+        if(!confirm("確定要刪除課程嗎？")){
+            return false;
+        }
+
+        // 向後端發送 Ajax 請求(這邊傳遞 delete 請求，與我們要執行的動作較相呼應)
+        // 一樣是以 post 請求發送資料，因為可以多選，所以是 json 中的值是矩陣型態
+        $.ajax({
+            "url"  : "/admin/courses/delete",
+            "type" : "delete",
+            "dataType" : "json",
+            "data" : {"arr" : cid_arr},
+            "traditional" : true,  // 當 data 型態為 json，而值為"矩陣"(如本篇的 cid_arr)，該選項能讓 key 保持正常，不然會把 key 改寫為 'arr[]'
+            "success" : function(mes){
+                alert("成功刪除了" + mes.results + "筆資料。")
+                // 重新整理表格
+                $("#coursesTable").trigger("reloadGrid")
+            }
+        })
+    })
+
+</script>
+
+
+</body>
+</html>

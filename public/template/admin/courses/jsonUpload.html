@@ -1,0 +1,31 @@
+<!-- 引入 jQuery 以及 bootstrap 樣式表 -->
+<script src="/js/jquery.min.js" type="text/javascript"></script>
+<link href="/css/application-a07755f5.css" rel="stylesheet" type="text/css" />
+
+
+<!-- 上傳方式，採用同步提交，利用 form 標籤，上傳檔案時，除了基本的 action、method，別忘了再加上 enctype -->
+<form action="/admin/courses/import" method="post" enctype="multipart/form-data" id="fileForm">
+<p>
+    <!-- 後端接收到時，會得到一個 JSON 物件，其中屬性 coursesJSON 便含有檔案資訊 -->
+    <input type="file" name="coursesJSON"/>
+</p>
+<p>
+    <!-- 按鈕採用 submit，點擊後便會觸發 post 請求 -->
+    <input type="submit" class="btn btn-success" value="上傳檔案"/>
+</p>
+</form>
+
+<!-- 監聽按鈕 -->
+<script>
+    // 監聽 id=fileForm 的元素，當觸發 submit 事件後，執行匿名函數
+    $("#fileForm").on("submit", function(){
+        // 若選擇取消，則回傳 false，便會阻止 submit 繼續執行
+        if(!confirm("請注意，提交後便會完全覆寫課程清單，確定要繼續嗎？")){
+            return false;
+        }
+        // 二次確認
+        if(!confirm("資料庫真的要覆寫了哦！？")){
+            return false;
+        }
+    })
+</script>

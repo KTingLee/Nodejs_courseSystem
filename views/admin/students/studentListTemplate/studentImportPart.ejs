@@ -1,0 +1,96 @@
+<!-- 分次讀取學生資料並製作成學生清單的方式 -->
+<!-- 若使用此方式，則後端會提供部分學生資料，作為 Ajax 的接口 -->
+<!-- 而前端(也就是此頁面)，會透過該接口，將資料呈現在 jqGrid 表格中 -->
+<!-- 而表格一樣可以翻頁、調整每頁列數、排序等等，只不過這些功能都是 "再次發送新的 Ajax 請求(且為 GET 請求)"！ -->
+<!-- 請求格式為 admin/students/partExport?_search=false&nd=1586593334266&rows=10&page=1&sidx=initpassword&sord=desc -->
+<!-- 後端便解析此格式，並將對應的學生資料傳遞至 Ajax 接口 -->
+
+<!-- 引入 jqGrid 所需檔案 -->
+<%- include ("./jqGrid_include.ejs") %>
+
+
+<!-- 放置學生清單表格，使用 jqGrid 顯示之，所以要依照 jqGrid 的用法，在後面會以 jQuery 語法插入清單 -->
+<table id='studentsTable'></table>
+<!-- 分頁清單(jqGrid能夠自帶分頁設置，這邊可以設定每頁資料數) -->
+<div id='pageNav'></div>
+
+
+<script>
+    // 製作 jqGrid 的語法
+    $(function(){
+        pageInit();
+    });
+
+    function pageInit(){
+        jQuery("#studentsTable").jqGrid(
+                {
+                    url : '/studentsData/partExport',  // 獲取學生資料接口
+                    datatype : "json",
+                    colNames : [ '學號', '姓名', '年級', '密碼', '是否為初始密碼'],
+                    colModel : [ 
+                                    {name : 'stu_id',         width : 55},
+                                    {name : 'Name',           width : 90, editable:true},
+                                    {
+                                       name : 'grade',          
+                                       width : 90, 
+                                       editable:true, 
+                                       edittype : "select",
+                                       editoptions : {value : "國一:國一;國二:國二;國三:國三;高一:高一;高二:高二;高三:高三"}
+                                    },
+                                    {name : 'password',       width : 100, editable:true},
+                                    {name : 'initpassword',   width : 80,align : "right", editable:true}
+                               ],
+                    rowNum : 10,
+                    rowList : [ 10, 20, 30 ],
+                    pager : '#pageNav',
+                    sortname : 'stu_id',
+                    viewrecords : true,
+                    sortorder : "asc",
+                    height : 210,
+                    loadonce: false,     // 若採用分批讀取學生資料的方式，此參數必須設為 false
+                    multiselect : true,  // 開啟清單選擇功能
+                    autowidth  : true,
+                    cellEdit : true,
+                    cellsubmit : "clientArray", // 預設為 remote，設成 clientArray 就可以防止 cell 操作完就要發送 Ajax 請求
+
+                    // cell 儲存後(按Enter後) 觸發 afterSaveCell 函數，會回傳該 cell: jqGrid定義的流水號id、欄位標題、更改後的值、位於哪列哪行
+                    // rowid 預設是 jqGrid 自己的列編號，但若在 colModel 中，有對某個欄位設定 key: true，則 rowid 將變為該欄位的值
+                    afterSaveCell : function(rowid, cellname, value, iRow, iCol){
+                        // 依照選擇的 cell 獲得學號，這邊不把學號設成主鍵，所以要自己抓值
+                        var sid = $('#studentsTable').getCell(iRow, 1)
+
+                        // 向後端發送 Ajax 請求(採用POST請求)，以利後端修改學生資料，並等待後端回應
+                        $.post('/studentsData/' + sid,{
+                            "stu_id" : sid,
+                            "cellName" : cellname,
+                            "value" : value
+                        }, function(mes){
+                            if(mes.results == 1){
+                                showTip('修改成功！')
+                            }else if(mes.results == -1){
+                                showTip("修改失敗，資料庫中沒有這位學生")
+                            }else if(mes.results == -2){
+                                showTip("連接資料庫失敗")
+                            }
+                        })
+                    }
+                });
+        jQuery("#studentsTable").jqGrid('navGrid', '#pageNav', {edit : false,add : false,del : false});
+        jQuery("#studentsTable").jqGrid('inlineNav', "#pageNav");
+    }
+
+
+    // 監聽快速查詢輸入框，每接收一個字就送出一個 Ajax 請求
+    // 監聽 input 事件，當輸入框每接收一個字元就會觸發一次，而觸發 input 事件時
+    // jqGrid 就獲取新數據，並向後端發送 Ajax 請求
+    $('#quickSearch').bind('input', function(){
+        var keyword = $(this).val();
+        // 讓 jqGrid 清空內容並重新發送數據
+        $("#studentsTable").jqGrid("clearGridData").jqGrid("setGridParam",{
+            datatype : 'json',
+            postData : {"keyword" : keyword},  // postData 的內容會直接加在 url
+            page : 1
+        }).trigger("reloadGrid");  // 表格重載
+    })
+
+</script>

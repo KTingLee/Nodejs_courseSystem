@@ -1,0 +1,24 @@
+<section id='sidebar'>
+    <i class='icon-align-justify icon-large' id='toggle'></i>
+    <ul id='dock'>
+        <li class='<% if(page == "index"){ %> active <% } %> launcher'>
+            <i class='icon-dashboard'></i>
+            <a href="/<%= level %>" >選課狀態</a>
+        </li>
+        <li class='<% if(page == "students"){ %> active <% } %> launcher'>
+            <!-- 原始的圖示 -->
+                <!-- <i class='icon-file-text-alt'></i> -->
+            <!-- 透過自己的 kit 引入 fontawesome 圖示 -->
+            <i class="fas fa-address-book"></i>
+            <a href="<% if(level == 'admin'){ %>/<%= level %><% } %>/students">學生清單</a>
+        </li>
+        <li class='<% if(page == "courses"){ %> active <% } %> launcher'>
+            <i class="fas fa-book"></i>
+            <a href="<% if(level == 'admin'){ %>/<%= level %><% } %>/courses">課程管理</a>
+        </li>
+        <li class='<% if(page == "reports"){ %> active <% } %> launcher dropdown hover'>
+            <i class="fas fa-chart-bar"></i>
+            <a href="<% if(level == 'admin'){ %>/<%= level %><% } %>/reports">課程報表</a>
+        </li>
+    </ul>
+</section>

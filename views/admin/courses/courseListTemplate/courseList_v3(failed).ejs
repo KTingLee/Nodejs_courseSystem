@@ -1,0 +1,155 @@
+<!-- 分次讀取課程資料並製作成課程清單的方式 -->
+<!-- 使用此方式，後端依照前端的要求，提供對應的課程資料，以作為 Ajax 的接口 -->
+<!-- 而前端(也就是此頁面)，會透過該接口，將資料呈現在 jqGrid 表格中 -->
+<!-- 而表格可以翻頁、調整每頁列數、排序等等，只不過這些功能都是 "再次發送新的 Ajax 請求(且為 GET 請求)"！ -->
+<!-- 請求格式為 admin/courses?_search=false&nd=1586593334266&rows=10&page=1&sidx=initpassword&sord=desc -->
+<!-- 後端便解析此格式，並將對應的學生資料傳遞至 Ajax 接口 -->
+
+<!-- 引入 jqGrid 所需檔案 -->
+<%- include ("./jqGrid_include.ejs") %>
+
+<!-- 因為學生與課程的 jqGrid 使用相同樣式表，而這邊要針對課程的做微調(因為課程簡介太長，要設定成自動換行) -->
+<style>
+    .ui-jqgrid tr.jqgrow td{
+        white-space: unset;
+    }
+</style>
+
+
+<!-- 放置課程清單表格，使用 jqGrid 顯示之，所以要依照 jqGrid 的用法，在後面會以 jQuery 語法插入清單 -->
+<table id='coursesTable'></table>
+<!-- 分頁清單(jqGrid能夠自帶分頁設置，這邊可以設定每頁資料數) -->
+<div id='pageNav'></div>
+
+
+<script>
+
+    var lastid;
+
+    // 製作 jqGrid 的語法
+    $(function(){
+        pageInit();
+    });
+
+    function pageInit(){
+        jQuery("#coursesTable").jqGrid(
+                {
+                    url : '/coursesData',  // 獲取課程資料接口(後端要把資料丟到此接口)
+                    datatype : "json",
+                    colNames : [ '課程編號', '課程名稱', '上課時間', '限制選課年級', '教師名稱', '人數', '課程簡介'],
+                    colModel : [ 
+                                    {name : 'cid',         width : 30},
+                                    {name : 'Name',           width : 60, editable:true},
+                                    {
+                                        name : 'courseDay',
+                                        width : 30,
+                                        editable: true, 
+                                        edittype : "select",
+                                        editoptions : {value : "星期二:星期二;星期四:星期四;星期五:星期五"}
+                                    },
+                                    {
+                                       name : 'allow',          
+                                       width : 90, 
+                                       editable: true
+                                    },
+                                    {name : 'teacher',       width : 30, editable:true},
+                                    {name : 'member',   width : 30,align : "right", editable:true},
+                                    {name : 'intro', sortable : false, editable : true, edittype : "textarea"}
+                               ],
+                    rowNum : 10,
+                    rowList : [ 10, 20, 30 ],
+                    pager : '#pageNav',
+                    sortname : 'cid',
+                    viewrecords : true,
+                    sortorder : "asc",
+                    height : 210,
+                    loadonce: false,     // 若採用分批讀取學生資料的方式，此參數必須設為 false
+                    multiselect : true,  // 開啟清單選擇功能
+                    autowidth  : true,
+                    cellEdit : true,
+                    cellsubmit : "clientArray", // 預設為 remote，設成 clientArray 就可以防止 cell 操作完就要發送 Ajax 請求
+
+                    // cell 儲存後(按Enter後) 觸發 afterSaveCell 函數，會回傳該 cell: jqGrid定義的流水號id、欄位標題、更改後的值、位於哪列哪行
+                    // rowid 預設是 jqGrid 自己的列編號，但若在 colModel 中，有對某個欄位設定 key: true，則 rowid 將變為該欄位的值
+                    afterSaveCell : function(rowid, cellname, value, iRow, iCol){
+                        // 因為 cid 的欄位沒設定 key:true，所以自己抓值
+                        var cid = $('#coursesTable').getCell(iRow, 1);
+
+                        // 向後端發送 Ajax 請求(採用POST請求)，以利後端修改課程資料，並等待後端回應
+                        $.post('/coursesData/' + cid,{
+                            "cid" : rowid,
+                            "cellName" : cellname,
+                            "value" : value
+                        }, function(mes){
+                            if(mes.results == 1){
+                                showTip('修改成功！')
+                            }else if(mes.results == -1){
+                                showTip("修改失敗，資料庫中沒有這門課程")
+                            }else if(mes.results == -2){
+                                showTip("連接資料庫失敗")
+                            }
+                        })
+                    },
+
+                    // 為了 "限制選課年級" 而寫的。 因為想要讓 "限制選課年級" 用複選框的方式勾選
+                    afterEditCell : function(rowid, cellName, cellContent, iRow, iCol){
+                        // console.log(rowid, cellName, cellContent, iRow, iCol)
+                        allGrade(rowid)
+                        // if(rowid !== lastid && iCol == 4){
+                        //     allGrade(rowid);
+                        //     lastid = rowid;
+                        // }
+                    }
+
+                });
+        jQuery("#coursesTable").jqGrid('navGrid', '#pageNav', {edit : false,add : false,del : false});
+        jQuery("#coursesTable").jqGrid('inlineNav', "#pageNav");
+    }
+    // "限制選課年級" 複選框需使用的函數
+    function allGrade(id) {
+        $("#" + id + "_allow").hide();
+        $("#" + id + "_allow").after(
+            "<label><input type='checkbox' value='國一'/>國一</label>" +
+            "<label><input type='checkbox' value='國二'/>國二</label>" +
+            "<label><input type='checkbox' value='國三'/>國三</label>" +
+            "<label><input type='checkbox' value='高一'/>高一</label>" +
+            "<label><input type='checkbox' value='高二'/>高二</label>" +
+            "<label><input type='checkbox' value='高三'/>高三</label>"
+        )
+
+        // 遍歷輸入框中的值，並讓 checkbox 勾上
+        var gradeArr = $("#" + id + "_allow").val().split(",");
+
+        // 預設 checkbox 要勾選的選項
+        $.each(gradeArr, function(index, value){
+            $("input[value" + item + "]").attr("checked", true);
+        })
+
+        // 同時監聽 checkbox 的變化，當 checkbox 的值改變的時候(觸發 change 事件)，便回傳給原輸入框
+        $("#" + id + "_allow").nextAll().change(function(){
+            var res = [];
+            // 重頭遍歷 checkbox 的狀態，並將選中 checkbox 的結果放入矩陣中，再重新放回輸入框
+            $("#" + id + "_allow").nextAll().find(":checked").each(function(){
+                // 此時的 this 指向被遍歷的 checkbox
+                res.push($(this).val());
+            })
+
+            // 改寫輸入框的結果(用逗號隔開)
+            $("#" + id + "_allow").val(res.join(","));
+        })
+    }
+
+    // 監聽快速查詢輸入框，每接收一個字就送出一個 Ajax 請求
+    // 監聽 input 事件，當輸入框每接收一個字元就會觸發一次，而觸發 input 事件時
+    // jqGrid 就獲取新數據，並向後端發送 Ajax 請求
+    $('#quickSearch').bind('input', function(){
+        var keyword = $(this).val();
+        // 讓 jqGrid 清空內容並重新發送數據
+        $("#coursesTable").jqGrid("clearGridData").jqGrid("setGridParam",{
+            datatype : 'json',
+            postData : {"keyword" : keyword},  // postData 的內容會直接加在 url
+            page : 1
+        }).trigger("reloadGrid");  // 表格重載
+    })
+
+</script>

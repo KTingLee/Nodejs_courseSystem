@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html class='no-js' lang='en'>
+
+<head>
+    <meta charset='utf-8'>
+    <meta content='IE=edge,chrome=1' http-equiv='X-UA-Compatible'>
+    <title>管理員面板 - 選課系統</title>
+    <%- include ("../../include/includeFiles.ejs") %>
+    <link rel="stylesheet" href="/css/tip-yellow.css" type="text/css" />
+    <script type="text/javascript" src="/js/jquery.poshytip.min.js"></script>
+</head>
+
+<body class='main page'>
+
+    <!-- Navbar -->
+    <%- include ("../../include/navBar.ejs") %>
+
+    <div id='wrapper'>
+        <!-- Sidebar -->
+        <%- include ("../../include/sidebar.ejs") %>
+        
+        <!-- Tools -->
+        <section id='tools'>
+            <ul class='breadcrumb' id='breadcrumb'>
+                <li><a href="/admin/students/">學生清單</a></li>
+                <li><a href="/admin/students/import">導入學生</a></li>
+                <li class='active'>增加學生</li>
+            </ul>
+        </section>
+        <!-- Content -->
+        <div id='content'>
+            <div class='panel panel-default'>
+                <div class='panel-heading'>
+                    <i class='icon-beer icon-large'></i>
+                        <span>
+                            增加學生
+                        </span>
+                </div>
+
+                <div class='panel-body'>
+                    <div class="col-lg-2">
+                        <p>
+                            學號：
+                        </p>
+                        <p>
+                            <input type="text" class="form-control" id="stu_id" checkValid />
+                        </p>
+                        <p>
+                            姓名：
+                        </p>
+                        <p>
+                            <input type="text" class="form-control" id="Name" checkValid />
+                        </p>
+                        <p>
+                            年級：
+                        </p>
+                        <p>
+                            <select class="form-control" id="grade" checkValid>
+                            　<option value="">請選擇</option>
+                            　<option value="國一">國一</option>
+                            　<option value="國二">國二</option>
+                            　<option value="國三">國三</option>
+                            　<option value="高一">高一</option>
+                            　<option value="高二">高二</option>
+                            　<option value="高三">高三</option>
+                            </select>
+                        </p>
+                        <p>
+                            初始密碼：
+                        </p>
+                        <p>
+                            <input type="text" class="form-control" id="password" checkValid />
+                        </p>
+
+                        <p>
+                            <input type="button" value="提交" class="btn btn-success" id="subBtn" disabled="disabled">
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // 建立一個物件，用以判斷輸入框是否都合格，當 invalid 的所有元素值都為 false 才會讓提交鈕可點選
+    function invalidInit(){
+        return invalid = {
+            "stu_id" : true,
+            "Name"   : true,
+            "grade"  : true,
+            "password" : true
+        }
+    }
+    var invalid = invalidInit();
+
+
+    // 透過 jQuery 建立元素
+    function alertTip(className, content){
+        return $("<div class='alert myalert alert-" + className + "'>" + content + "</div>");
+    }
+
+
+    // 檢驗學號，檢查是否為 8 位數字，若合格，則 invalid 中的 stu_id 值便為 false
+    // 若驗證沒過還會增加提示
+    $("#stu_id").blur(function(){
+        var stu_id = $(this).val();
+        if(!/^[\d]{8}$/.test(stu_id)){
+            // after 表示某元素後方建立新元素
+            $(this).after(alertTip("danger", "學號必須為 8 位數字。"))
+            invalid.stu_id = true;
+            return;
+        }
+
+        // 目前的 this 是指向 #stu_id 物件，但等等 ajax 函數中的 this 會指向 ajax 函數本身(除非用箭頭)
+        // 所以先將 "指向 #stu_id 的 this" 保存(變數可用 $ 做為開頭)
+        var $this = $(this)
+
+        // 向後端確認該學號是否存在
+        $.ajax({
+            "url"  : "/studentsData/" + stu_id,
+            "type" : "propfind",
+            "success" : function(mes){
+                if(mes.results == 0){
+                    invalid.stu_id = false;
+                    $($this).after(alertTip("success", "學號可使用。"));
+                }else{
+                    invalid.stu_id = true;
+                    $($this).after(alertTip("warning", "學號已存在。"));
+                }
+            }
+        })
+    })
+
+
+    // 學習對 jQuery 物件新增靜態方法，讓警告框的操作更優雅
+    // .fn.extend 可以在 jQuery 物件上新增靜態方法，供 jQuery 物件使用
+    $.fn.extend({
+        "alertTip2" : function(className, content){
+            // this 指向 "使用該靜態方法的 jQuery 物件本身"
+            this.after(
+                $("<div class='alert myalert alert-" + className + "'>" + content + "</div>")
+            );
+        },
+
+        "clearTip" : function(){
+            // 刪除元素後方的警告框(class 包含 alert 者)
+            this.nextAll(".alert").remove();
+        }
+    })
+
+
+    // 驗證姓名是否為空，若不為空，則 invalid 的 Name 屬性變為 false
+    // 這邊的警告框是以靜態方法建立的
+    $("#Name").blur(function(){
+        var Name = $(this).val();
+        if(Name != ''){
+            invalid.Name = false;
+            $(this).alertTip2("success", "OK!")
+        }else{
+            // after 表示某元素後方建立新元素，以靜態方法產生
+            $(this).alertTip2("danger", "姓名不能為空")
+            invalid.Name = true;
+        }
+    })
+
+    // 驗證年級是否有選擇，採用 change 事件做檢查(只要值有改變就觸發 change 事件)
+    $("#grade").change(function(){
+        var grade = $(this).val();
+        if(grade != ''){
+            invalid.grade = false;
+        }else{
+            // after 表示某元素後方建立新元素，以靜態方法產生
+            $(this).alertTip2("danger", "年級尚未選擇")
+            invalid.grade = true;
+        }
+    })    
+
+    // 提供初始密碼
+    $("#password").blur(function(){
+        var password = $(this).val();
+        if(password != ''){
+            invalid.password = false;
+            $(this).alertTip2("success", "OK!")
+        }else{
+            // after 表示某元素後方建立新元素，以靜態方法產生
+            $(this).alertTip2("danger", "密碼不能為空")
+            invalid.password = true;
+        }
+    })
+
+
+
+    // 當輸入框在輸入時，應該消除其警告框
+    $("[checkValid]").focus(function(){
+        $(this).clearTip();
+    })
+
+    // 檢查含有 checkValid 屬性的元素是否都合格(只要任一輸入框 blur 就檢查)
+    $("[checkValid]").blur(function(){
+        console.log(invalid)
+        var allValid = true;
+        for(let k in invalid){
+            // 當 invalid 有一項為 true，表示有輸入框不合格，並跳出迴圈
+            if(invalid[k]){
+                allValid = false;
+                break;
+            }
+        }
+        // 若所有輸入框皆合格，則讓提交鈕可點選
+        if(allValid){
+            $("#subBtn").attr('disabled', false);
+        }else{
+            $("#subBtn").attr('disabled', true);
+        }
+    })
+
+
+    // 當提交按鈕按下時，檢查輸入框是否都合格，若合格便向後端發送 post 請求
+    $("#subBtn").click(function(){
+        // 獲得輸入框的值
+        var stu_id = $("#stu_id").val();
+        var Name = $("#Name").val();
+        var grade = $("#grade").val();
+        var password = $("#password").val();
+
+        // 向後端提交資料
+        $.post('/admin/students/add', {
+            "stu_id" : stu_id,
+            "Name" : Name,
+            "grade" : grade,
+            "password" : password
+        }, function(mes){
+            // 成功跳提示，並清除輸入框內容，以及重置 invalid 物件
+            if(mes.results == 1){
+                alert('已成功新增學生！')
+                $.each($('[checkValid]'), function(index, item){
+                    $(item).val('').clearTip();
+                });
+            }else if(mes.results == -1){
+                alert('伺服器出錯了..')
+            }else if(mes.results == -2){
+                alert('別亂改網頁原始碼，我還是會知道你學號不正確的！')
+            }else if(mes.results == -3){
+                alert('別亂改網頁原始碼，我還是會知道你名字沒有填的！')
+            }else if(mes.results == -4){
+                alert('別亂改網頁原始碼，我還是會知道你年級還沒選的！')
+            }else if(mes.results == -5){
+                alert('別亂改網頁原始碼，我還是會知道你密碼還沒填的！')
+            }else if(mes.results == -6){
+                alert('別亂改網頁原始碼，我還是會知道你學號是重複的！')
+            }
+        })
+    })
+</script>
+
+
+
+
+</body>
+</html>
