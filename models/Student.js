@@ -9,6 +9,7 @@ var studentSchema = new mongoose.Schema({
     "stu_id"   : String,
     "Name"     : String,
     "grade"    : String,   // 學生的年級，1, 2, 3 代表國一、二、三；4, 5, 6 代表高一、二、三
+    "email"    : {type : String, default : ""},
     "password" : String,
     "initpassword" : {type : Boolean, default : true},  // 是否為最初直接提供給學生的初始密碼，默認為 true；當用戶登入後，要求更改密碼，將便為 false
     "myCourses": [String]  // 記錄學生所選課程

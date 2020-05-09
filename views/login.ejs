@@ -33,6 +33,9 @@
             width: inherit;
             display: inherit;
         }
+        #loginBtn{
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
@@ -58,6 +61,7 @@
                 <input type="password" class="form-control" id="userPassword" checkValid>
             </p>
             <input type="button" class="btn btn-success" value="登入" disabled="disabled" id="loginBtn">
+            <a href="/forget" class="btn btn-warning">忘記密碼</a>
         </div>
 
     </div>
@@ -81,9 +85,9 @@
     // 檢查含有 checkValid 屬性的元素是否都有值(只要任一輸入框 blur 就檢查)
     $("[checkValid]").blur(function(){
         if($("#userID").val() != '' && $("#userPassword").val() != ''){
-            $("#loginBtn").attr("disabled", false);
+            $("#loginBtn").attr("disabled", false).css("cursor", "pointer");
         }else{
-            $("#loginBtn").attr("disabled", true);
+            $("#loginBtn").attr("disabled", true).css("cursor", "not-allowed");
         }
     })
 
@@ -107,6 +111,7 @@
             }
         })
     })
+
 </script>
 </body>
 </html>

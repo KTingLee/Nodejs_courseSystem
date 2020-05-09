@@ -28,20 +28,28 @@
     <div class="row">
         <div class="col-lg-5 pwdBox">
         <% if(initpassword){ %>
-            <p class="alert alert-danger">系統偵測到你目前使用初始密碼，請修改密碼以便進入選課系統！</p>
+            <p class="alert alert-danger">首次登入必須提供信箱並更改密碼！</p>
         <% } %>
+        <p>
+            電子信箱(請填 gmail，找回密碼使用)：
+        </p>
+        <p>
+            <input type="text" id="email" class="form-control" value="<%= email %>" checkValid>
+            <span class="alert myalert2 alert-danger emailAlert" >信箱不能為空！</span>
+        </p>
+
         <p>
             新密碼：
         </p>
         <p>
-            <input type="password" id="pwd1" class="form-control" checkValid>
-            <span class="alert myalert2 alert-danger">密碼不一致！</span>
+            <input type="password" id="pwd1" class="form-control" checkValid checkPWD>
+            <span class="alert myalert2 alert-danger pwdAlert" >密碼不一致！</span>
         </p>
         <p>
             重複密碼：
         </p>
         <p>
-            <input type="password" id="pwd2" class="form-control" checkValid>
+            <input type="password" id="pwd2" class="form-control" checkValid checkPWD>
         </p>
         <input type="button" class="btn btn-success" value="確認" id="subBtn" disabled="disabled">
         </div>
@@ -49,31 +57,69 @@
 
 </body>
 <script type="text/javascript">
-    // 檢查密碼是否一致，只要輸入就檢查(input 事件)，若兩者一致，則可按下確認
-    // 且不一致，則跳警告框；一致則隱藏
-    $("[checkValid]").on("input", function(){
+    // 建立驗證物件，若元素值為 true，表示驗證不通過
+    var invalid = {
+        "email" : true,
+        "pwd"   : true
+    };
+
+    // 檢查密碼是否一致，只要輸入就檢查(input 事件)，若兩者一致，則密碼驗證通過(變為 false)
+    // 且若不一致，則跳警告框；一致則隱藏
+    $("[checkPWD]").on("input", function(){
         if($(this).val() == ''){
-            $("#subBtn").attr("disabled", true);
-            $(".myalert2").show().html('密碼不能為空');
+            $(".pwdAlert").show().html('密碼不能為空');
             return;
         }
         if($("#pwd1").val() === $("#pwd2").val()){
-            $("#subBtn").attr("disabled", false);
-            $(".myalert2").hide();
+            $(".pwdAlert").hide();
+            invalid.pwd = false;
         }else{
-            $("#subBtn").attr("disabled", true);
-            $(".myalert2").show().html('密碼不一致');
+            $(".pwdAlert").show().html('密碼不一致');
+            invalid.pwd = true;
         }
     })
 
+    // 檢查電子信箱是否為空
+    $("#email").blur(function(){
+        // 符合電子信箱格式
+        if( /.*@gmail\.com/.test($(this).val()) == true){
+            $(".emailAlert").hide();
+            invalid.email = false;
+        }else{
+            $(".emailAlert").show().html('信箱不符合格式');
+            invalid.email = true;
+        }
+
+    })
+
+    // 監聽 checkValid 元素，若 blur 就檢驗是否可以讓按鈕按下
+    $("[checkValid]").blur(function(){
+        var allValid = true;
+        for(let k in invalid){
+            // 當 invalid 有一項為 true，表示有輸入框不合格，並跳出迴圈
+            if(invalid[k]){
+                allValid = false;
+                break;
+            }
+        }
+        // 若所有輸入框皆合格，則讓提交鈕可點選
+        if(allValid){
+            $("#subBtn").attr('disabled', false);
+        }else{
+            $("#subBtn").attr('disabled', true);
+        }
+    })
+
+
     // 當確認鍵按下時，向後端發送修改的密碼，並等待後端回應
     $("#subBtn").click(function(){
-        $.post('changePWD',{
+        $.post('/changePWD',{
+            "email": $("#email").val(),
             "pwd1" : $("#pwd1").val(),
             "pwd2" : $("#pwd2").val()
         }, function(mes){
             if(mes.results == 1){
-                alert("密碼修改成功！即將登出...")
+                alert("修改成功！即將登出...")
                 window.location = "/logout"
             }else if(mes.results == -1){
                 alert("伺服器錯誤！")

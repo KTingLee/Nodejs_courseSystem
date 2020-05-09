@@ -137,11 +137,23 @@ exports.showChangePWD = function(req, res){
     var initpassword = req.session.initpassword;
     var grade = req.session.grade;
 
-    res.render("changePWD",{
-        "userID"   : userID,
-        "userName" : userName,
-        "initpassword" : initpassword,
-        "userGrade" : grade
+    // 抓取該學生的電子信箱
+    Student.find({"stu_id" : userID}, function(err, results){
+        if(err){
+            res.json({"results" : -1});  // -1 表示伺服器錯誤
+            return;
+        }
+        // 學生存在
+        var thisStudent = results[0];
+
+        // 渲染頁面
+        res.render("changePWD",{
+            "userID"   : userID,
+            "userName" : userName,
+            "initpassword" : initpassword,
+            "userGrade" : grade,
+            "email"     : thisStudent.email
+        })
     })
 }
 
@@ -156,8 +168,15 @@ exports.doChangePWD = function(req, res){
             return;
         }
         var userID = req.session.userID;
-        var pwd1 = fields.pwd1;
-        var pwd2 = fields.pwd2;
+        var pwd1  = fields.pwd1;
+        var pwd2  = fields.pwd2;
+        var email = fields.email;
+
+        // 檢查電子信箱是否合格
+        if( /.*@gmail\.com/.test(email) != true){
+            res.json({"results" : -1});  // -4 表示電子信箱不合格
+            return;
+        }
 
         // 檢查密碼是否一致
         if(pwd1 === pwd2){
@@ -177,6 +196,8 @@ exports.doChangePWD = function(req, res){
                 thisStudent.password = crypto.createHash("sha256").update(pwd1).digest("hex");
                 // 將 initpassword 設置為 false，表示該使用者已經修改過密碼
                 thisStudent.initpassword = false;
+                // 將電子信箱寫入學生資料
+                thisStudent.email = email;
                 // 寫入資料庫
                 thisStudent.save();
 

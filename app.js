@@ -28,7 +28,8 @@ app.set("view engine", "ejs")
 
 // 路由清單，同一個路由可以使用不同請求(這也叫 RESTful 風格)
 // 若有 /student/add:var 這種用法，盡量放後面
-app.get("/admin"                   , adminCtrl.showAdmin);         // 管理員頁面 - 首頁
+// app.get("/admin"                   , adminCtrl.showAdmin);         // 管理員頁面 - 首頁
+app.get("/admin"                    , adminStudentsCtrl.showAdminStudents);         // 管理員頁面 - 首頁
 
 app.get("/admin/students"           , adminStudentsCtrl.showAdminStudents);        // 管理員頁面 - 學生主頁面
 app.get("/admin/students/import"    , adminStudentsCtrl.showAdminStudentsImport);  // 管理員頁面 - 導入學生頁面
@@ -49,21 +50,21 @@ app.get("/admin/courses/import"    , adminCoursesCtrl.showAdminCoursesImport); /
 app.post("/admin/courses/import"   , adminCoursesCtrl.uploadCoursesJSON);      // 管理員頁面 - 導入課程頁面(上傳課程資料)
 app.get("/admin/courses/add"       , adminCoursesCtrl.showAdminCoursesAdd);    // 管理員頁面 - 新增課程頁面
 app.post("/admin/courses/add"      , adminCoursesCtrl.doAdminCoursesAdd);      // 管理員頁面 - 新增課程頁面(增加一門課程至資料庫)
-app.delete("/admin/courses/delete", adminCoursesCtrl.deleteCourses);           // 管理員頁面 - 課程主頁面(刪除課程)
+app.delete("/admin/courses/delete" , adminCoursesCtrl.deleteCourses);          // 管理員頁面 - 課程主頁面(刪除課程)
 
-app.get("/coursesData", adminCoursesCtrl.showCourses);                         // Ajax 接口(前端獲取資料) : 課程清單 - 獲取所有課程資料
-app.post("/admin/courses/", adminCoursesCtrl.updateCourse);                    // Ajax 接口(後端獲取資料) : 課程清單 - 修改課程資料
+app.get("/coursesData"             , adminCoursesCtrl.showCourses);            // Ajax 接口(前端獲取資料) : 課程清單 - 獲取所有課程資料
+app.post("/admin/courses/"         , adminCoursesCtrl.updateCourse);           // Ajax 接口(後端獲取資料) : 課程清單 - 修改課程資料
 app.propfind("/coursesData/:cid"   , adminCoursesCtrl.checkCourseExist);       // Ajax 接口(後端獲取資料) : 學生主頁面 - 檢查學生學號是否存在
 
-app.get("/", mainCtrl.showIndex);  // 顯示首頁
-app.get("/login", mainCtrl.showLogin);  // 顯示登入頁面
-app.post("/login", mainCtrl.doLogin);  // 驗證登入內容
-app.get("/logout", mainCtrl.doLogout);  // 執行登出動作
-app.get("/changePWD", mainCtrl.showChangePWD);  // 顯示密碼更改頁面
-app.post("/changePWD", mainCtrl.doChangePWD);  // 執行修改密碼
-app.get("/checkCourses", mainCtrl.checkCourses);  // 執行修改密碼
-app.post("/getCourse",  mainCtrl.getCourse);  // 選修課程
-app.post("/dropCourse", mainCtrl.dropCourse); // 退選課程
+app.get("/"                        , mainCtrl.showIndex);                      // 顯示首頁
+app.get("/login"                   , mainCtrl.showLogin);                      // 顯示登入頁面
+app.post("/login"                  , mainCtrl.doLogin);                        // 驗證登入內容
+app.get("/logout"                  , mainCtrl.doLogout);                       // 執行登出動作
+app.get("/changePWD"               , mainCtrl.showChangePWD);                  // 顯示密碼更改頁面
+app.post("/changePWD"              , mainCtrl.doChangePWD);                    // 執行修改密碼
+app.get("/checkCourses"            , mainCtrl.checkCourses);                   // 執行修改密碼
+app.post("/getCourse"              , mainCtrl.getCourse);                      // 選修課程
+app.post("/dropCourse"             , mainCtrl.dropCourse);                     // 退選課程
 
 
 
