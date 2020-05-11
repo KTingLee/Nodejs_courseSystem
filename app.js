@@ -62,7 +62,9 @@ app.post("/login"                  , mainCtrl.doLogin);                        /
 app.get("/logout"                  , mainCtrl.doLogout);                       // 執行登出動作
 app.get("/changePWD"               , mainCtrl.showChangePWD);                  // 顯示密碼更改頁面
 app.post("/changePWD"              , mainCtrl.doChangePWD);                    // 執行修改密碼
-app.get("/checkCourses"            , mainCtrl.checkCourses);                   // 執行修改密碼
+app.get("/forget"                  , mainCtrl.forgetPWD);                      // 顯示忘記密碼頁面
+app.post("/forget"                 , mainCtrl.doForgetPWD);                    // 執行忘記密碼找回工作
+app.get("/checkCourses"            , mainCtrl.checkCourses);                   // 查看選課頁面
 app.post("/getCourse"              , mainCtrl.getCourse);                      // 選修課程
 app.post("/dropCourse"             , mainCtrl.dropCourse);                     // 退選課程
 

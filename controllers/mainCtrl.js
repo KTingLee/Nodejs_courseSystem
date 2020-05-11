@@ -214,6 +214,66 @@ exports.doChangePWD = function(req, res){
     })
 }
 
+// 忘記密碼頁面
+exports.forgetPWD = function(req, res){
+    res.render("forgetPWD")
+}
+
+// 找回密碼，前端向後端發送 post 表單
+exports.doForgetPWD = function(req, res){
+    const form  = formidable({ multiples: true , keepExtensions: true});
+    form.parse(req, (err, fields, files) => {
+        if(err){
+            res.json({"result" : -1});  // -1 表示伺服器錯誤
+            return;
+        }
+        var fieldsEmail  = fields.email;
+        var stu_id = fields.stu_id;
+
+        // 從學生資料庫檢查
+        Student.find({"stu_id" : stu_id}, function(err, results){
+            if(err){
+                res.json({"result" : -1});  // -1 表示伺服器錯誤
+                return;
+            }
+
+            if(results.length == 0){
+                res.json({"result" : -2});  // -2 表示沒有此學生
+                return;
+            }
+
+            // 學生存在，驗證信箱是否正確
+            var thisStudent = results[0];
+            var email = thisStudent.email;
+
+            // 若信箱正確，則改寫密碼，並把 initpassword 設為 true
+            if(fieldsEmail == email){
+                // 改寫學生資料
+                thisStudent.initpassword = true;
+                thisStudent.password = RandomPassword();
+                thisStudent.save();
+
+                // 向前端回傳結果
+                res.json({"result" : thisStudent.password});
+            }else{
+                res.json({"result" : -3});  // -3 表示信箱錯誤
+            }
+
+        })
+    })
+}
+
+// 隨機密碼生成函數
+RandomPassword = function(){
+    // 等等加密用的字元
+    var str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789&%$#@!"
+    var pwd = "";
+    // 製作六位數密碼
+    for(let m = 0; m < 6; m++){
+        pwd += str.charAt(parseInt(str.length * Math.random()))
+    }
+    return pwd;
+}
 
 // 選課頁面必須提供課程能否報名(因為課程資訊已知，所以將針對個別學生，顯示各個課程對於他的狀態如何)
 // 主要是想知道學生選的課程是星期幾，學生選課數量，課程剩餘人數
