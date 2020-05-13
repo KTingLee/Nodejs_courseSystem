@@ -1,12 +1,39 @@
+<style>
+    .nav-pills .nav-link.active{
+        background-color: skyblue;
+    }
+    .mr-1{
+        margin-right: 3%!important;
+    }
+</style>
 
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+            <ul class="nav nav-pills">
+                <li class="nav-item">
+                    <a class="nav-link disabled" aria-disabled="true"><b>逞大選課系統</b> 親愛的
+                        <%= userName %> （學號：
+                        <%= userID %>,
+                        <%= userGrade %> ） 歡迎回來！</a>
+                </li>
 
-<div>
-    <nav class="nav">
-        <a class="nav-link disabled" aria-disabled="true"><b>逞大選課系統</b>   親愛的 <%= userName %>( <%= userID %>, <%= userGrade %> ) 歡迎回來！</a>
-        <a class="nav-link" href="/">課程選擇</a>
-        <a class="nav-link" href="/myCourses">我的課程</a>
-        <a class="nav-link" href="/changePWD">修改個人資料</a>
-        <a class="nav-link navbar-right" href="/logout">登出系統</a>
-    </nav>
-    <hr/>
+                <li class="nav-item">
+                    <a class="nav-link <% if(nowPage == 'index'){%> <%= 'active' %> <% } %>" href="/">課程選擇</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="/myCourses">我的課程</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link <% if(nowPage == 'changePWD'){%> <%= 'active' %> <% } %>" href="/changePWD">修改個人資料</a>
+                </li>
+
+                <li class="nav-item ml-auto mr-1">
+                    <a class="nav-link" href="/logout">登出系統</a>
+                </li>
+            </ul>
+        </div>
+    </div>
 </div>

@@ -36,6 +36,7 @@ exports.showIndex = function(req, res){
             res.redirect("/changePWD");
         }else{
             res.render("index", {
+                "nowPage"  : "index",
                 "userID"   : userID,
                 "userName" : userName,
                 "userGrade" : grade
@@ -143,11 +144,17 @@ exports.showChangePWD = function(req, res){
             res.json({"results" : -1});  // -1 表示伺服器錯誤
             return;
         }
+
+        if(results.length == 0){
+            res.redirect("/login");
+            return;
+        }
         // 學生存在
         var thisStudent = results[0];
 
         // 渲染頁面
         res.render("changePWD",{
+            "nowPage"  : "changePWD",
             "userID"   : userID,
             "userName" : userName,
             "initpassword" : initpassword,

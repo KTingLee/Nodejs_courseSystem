@@ -11,6 +11,7 @@
     <style>
         .pwdBox{
             padding-left: 4%;
+            margin-top: 20px;
         }
         .myalert2{
             padding: 4px;
@@ -25,35 +26,38 @@
 <body>
     <%- include ("./include/user_template.ejs") %>
 
-    <div class="row">
-        <div class="col-lg-5 pwdBox">
-        <% if(initpassword){ %>
-            <p class="alert alert-danger">首次登入必須提供信箱並更改密碼！</p>
-        <% } %>
-        <p>
-            電子信箱(請填 gmail，找回密碼使用)：
-        </p>
-        <p>
-            <input type="text" id="email" class="form-control" value="<%= email %>" checkValid>
-            <span class="alert myalert2 alert-danger emailAlert" >信箱不能為空！</span>
-        </p>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-5 pwdBox">
+            <% if(initpassword){ %>
+                <p class="alert alert-danger">首次登入必須提供信箱並更改密碼！</p>
+            <% } %>
+            <p>
+                電子信箱(請填 gmail，找回密碼使用)：
+            </p>
+            <p>
+                <input type="text" id="email" class="form-control" value="<%= email %>" checkValid>
+                <span class="alert myalert2 alert-danger emailAlert" >信箱不能為空！</span>
+            </p>
 
-        <p>
-            新密碼：
-        </p>
-        <p>
-            <input type="password" id="pwd1" class="form-control" checkValid checkPWD>
-            <span class="alert myalert2 alert-danger pwdAlert" >密碼不一致！</span>
-        </p>
-        <p>
-            重複密碼：
-        </p>
-        <p>
-            <input type="password" id="pwd2" class="form-control" checkValid checkPWD>
-        </p>
-        <input type="button" class="btn btn-success" value="確認" id="subBtn" disabled="disabled">
+            <p>
+                新密碼：
+            </p>
+            <p>
+                <input type="password" id="pwd1" class="form-control" checkValid checkPWD>
+                <span class="alert myalert2 alert-danger pwdAlert" >密碼不一致！</span>
+            </p>
+            <p>
+                重複密碼：
+            </p>
+            <p>
+                <input type="password" id="pwd2" class="form-control" checkValid checkPWD>
+            </p>
+            <input type="button" class="btn btn-success" value="確認" id="subBtn" disabled="disabled">
+            </div>
         </div>
     </div>
+
 
 </body>
 <script type="text/javascript">
@@ -89,8 +93,13 @@
             $(".emailAlert").show().html('信箱不符合格式');
             invalid.email = true;
         }
-
     })
+
+    // 電子信箱一開始會直接引入，此時若有值，則去除警告框
+    if( $("#email").val() != ''){
+        $(".emailAlert").hide();
+    }
+    
 
     // 監聽 checkValid 元素，若 blur 就檢驗是否可以讓按鈕按下
     $("[checkValid]").blur(function(){
@@ -109,7 +118,6 @@
             $("#subBtn").attr('disabled', true);
         }
     })
-
 
     // 當確認鍵按下時，向後端發送修改的密碼，並等待後端回應
     $("#subBtn").click(function(){
