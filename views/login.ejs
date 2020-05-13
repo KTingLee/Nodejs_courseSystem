@@ -36,6 +36,30 @@
         #loginBtn{
             cursor: not-allowed;
         }
+        #authBtn{
+            position:absolute;
+            right: 2%;
+        }
+        #authArea{
+            background-color: rgba(0, 0, 0, 0.4);
+            position: absolute;
+            top: 10px;
+            left: 0px;
+            height: 90%;
+            display: none;
+        }
+        #authArea .col-lg-6{
+            margin: 2% auto 0px;
+            width: 300px;
+            background-color: #dee2e6;
+        }
+        #authArea .col-lg-6>form>p{
+            margin-top: 2%;
+            margin-bottom: 1%;
+        }
+        #authArea .col-lg-6>form>p input{
+            margin-bottom: 2%;
+        }
     </style>
 </head>
 <body>
@@ -62,8 +86,27 @@
             </p>
             <input type="button" class="btn btn-success" value="登入" disabled="disabled" id="loginBtn">
             <a href="/forget" class="btn btn-warning">忘記密碼</a>
+            <input type="button" class="btn btn-info" value="管理員" id="authBtn">
         </div>
 
+    </div>
+</div>
+
+<div class="container-fluid" id="authArea">
+    <div class="col-lg-6">
+        <!-- 利用 form 來傳遞表單，因為用 ajax 無法在後端重定向，別忘了表單要加上 name="" ，來說明值的 key -->
+        <form method="post" action="/authLogin" enctype="multipart/form-data">
+            <p>管理員帳號：</p>
+            <input type="text" name="authID" id="authID">
+            <p>管理員密碼：</p>
+            <input type="password" name="authPWD" id="authPWD">
+            <p>
+                <input type="submit" value="登入">
+                <input type="button" value="取消" id="cancel">
+                <!-- 利用 Ajax 傳遞管理員帳密，但無法在後端重定向 -->
+                <input type="button" value="Ajax登入" id="authLogin">
+            </p>
+        </form> 
     </div>
 </div>
 
@@ -111,6 +154,39 @@
             }
         })
     })
+
+    // 監聽管理員按鈕，按下時跳出輸入框
+    $("#authBtn").click(function(){
+        $("#authArea").css({"display" : "block"});
+    })
+
+    // 監聽管理員面板中的取消按鈕
+    $("#cancel").click(function(){
+        $("#authArea").css({"display" : "none"});
+        $("#authID").val("");
+        $("#authPWD").val("");
+    })
+
+    // 監聽管理員面板中的登入按鈕
+    $("#authLogin").click(function(){
+        var authID  = $("#authID").val();
+        var authPWD = $("#authPWD").val();
+        
+        $.post("/authLogin", {
+            "authID" : authID,
+            "authPWD": authPWD
+        }, function(mes){
+            if(mes.results == "-2"){
+                $("#authID").val("");
+                $("#authPWD").val("");
+                alert("登入失敗");
+                $("#authArea").css({"display" : "none"});
+            }else{
+                window.location = mes.results;
+            }
+        })
+    })    
+
 
 </script>
 </body>

@@ -70,6 +70,8 @@ app.post("/dropCourse"             , mainCtrl.dropCourse);                     /
 app.get("/myCourses"               , mainCtrl.showMyCourses);                  // 所選課程頁面
 app.propfind("/myCourses"          , mainCtrl.getMyCourses);                   // 所選課程資訊
 
+app.post("/authLogin"              , adminCtrl.authLogin);                     // 管理員登入頁面
+
 
 
 app.get("/admin/reports"           , adminCtrl.showAdminReports);  // 管理員頁面 - 課程報表頁面

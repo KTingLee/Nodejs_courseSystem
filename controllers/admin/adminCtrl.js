@@ -36,4 +36,32 @@ exports.showAdminReports = function(req, res){
     })
 }
 
+// 管理員登入按鈕。檢查帳密是否為 root
+exports.authLogin = function(req, res){
+    const form  = formidable({ multiples: true , keepExtensions: true});
+        form.parse(req, (err, fields, files) => {
+            if(err){
+                res.json({"results" : -1});  // -1 表示伺服器錯誤
+                return;
+            }
 
+            var authID = fields.authID;
+            var authPWD = fields.authPWD;
+
+            // 利用傳統表單傳遞管理員帳密，可在後端重定向
+            if(authID == "root" && authPWD == "root"){
+                res.redirect("/admin");
+                return;
+            }
+            // 利用 Ajax 發送 POST 請求，以傳遞管理員帳密，無法於後端重定向，故將重定向網址傳給前端(有暴露風險)
+            else if(authID == "ajax" && authPWD == "ajax"){
+                res.json({"results":"/admin"});
+            }
+            // 登入失敗
+            else{
+                res.json({"results" : -2});
+            }
+        })
+
+    
+}
