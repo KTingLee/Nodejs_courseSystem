@@ -54,7 +54,7 @@ app.delete("/admin/courses/delete" , adminCoursesCtrl.deleteCourses);          /
 
 app.get("/coursesData"             , adminCoursesCtrl.showCourses);            // Ajax 接口(前端獲取資料) : 課程清單 - 獲取所有課程資料
 app.post("/admin/courses/"         , adminCoursesCtrl.updateCourse);           // Ajax 接口(後端獲取資料) : 課程清單 - 修改課程資料
-app.propfind("/coursesData/:cid"   , adminCoursesCtrl.checkCourseExist);       // Ajax 接口(後端獲取資料) : 學生主頁面 - 檢查學生學號是否存在
+app.propfind("/coursesData/:cid"   , adminCoursesCtrl.checkCourseExist);       // Ajax 接口(後端獲取資料) : 課程清單 - 檢查該課程編號是否存在
 
 app.get("/"                        , mainCtrl.showIndex);                      // 顯示首頁
 app.get("/login"                   , mainCtrl.showLogin);                      // 顯示登入頁面
@@ -67,6 +67,8 @@ app.post("/forget"                 , mainCtrl.doForgetPWD);                    /
 app.get("/checkCourses"            , mainCtrl.checkCourses);                   // 查看選課頁面
 app.post("/getCourse"              , mainCtrl.getCourse);                      // 選修課程
 app.post("/dropCourse"             , mainCtrl.dropCourse);                     // 退選課程
+app.get("/myCourses"               , mainCtrl.showMyCourses);                  // 所選課程頁面
+app.propfind("/myCourses"          , mainCtrl.getMyCourses);                   // 所選課程資訊
 
 
 
