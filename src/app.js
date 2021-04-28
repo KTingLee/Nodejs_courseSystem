@@ -1,15 +1,14 @@
-/*
-選課系統 - CourseSystem
-*/
+import express from 'express'
+import session from "express-session"
+import mongoose from 'mongoose'
+import adminCtrl from "./controllers/admin/adminCtrl.js"
+import adminStudentsCtrl from "./controllers/admin/adminStudentsCtrl.js"
+import adminCoursesCtrl from "./controllers/admin/adminCoursesCtrl.js"
+import mainCtrl from "./controllers/mainCtrl.js"
 
-var express = require("express");
-var app = express();
-var mongoose = require('mongoose');
-var session = require("express-session");
-var adminCtrl = require("./controllers/admin/adminCtrl.js");
-var adminStudentsCtrl = require("./controllers/admin/adminStudentsCtrl.js")
-var adminCoursesCtrl = require("./controllers/admin/adminCoursesCtrl.js")
-var mainCtrl = require("./controllers/mainCtrl.js");
+const app = express()
+const debug = require('debug')('bxb:app')
+const MongoStore = require('connect-mongo')
 
 // 連結資料庫 - CourseSystem  (記得先打開數據庫)
 mongoose.connect('mongodb://localhost/CourseSystem', {useNewUrlParser: true});
