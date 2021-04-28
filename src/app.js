@@ -6,6 +6,8 @@ import adminCtrl from "./controllers/admin/adminCtrl.js"
 import adminStudentsCtrl from "./controllers/admin/adminStudentsCtrl.js"
 import adminCoursesCtrl from "./controllers/admin/adminCoursesCtrl.js"
 import mainCtrl from "./controllers/mainCtrl.js"
+import showCtrl from './controllers/show.controller.js'
+import showRoutes from './routes/show.route.js'
 
 const app = express()
 const debug = require('debug')('bxb:app')
@@ -27,7 +29,10 @@ function initNormal() {
   app.set("view engine", "ejs")
   app.use(express.json({ limit: 1024 * 1024 * 1024 })) // 1G
   app.use(express.urlencoded({ extended: true }))
- 
+
+  app.get('/', showCtrl.showIndex)
+  app.use('/show', showRoutes)
+  // app.get("/login", mainCtrl.showLogin);                      // 顯示登入頁面
 
   app.get("/admin", adminStudentsCtrl.showAdminStudents);         // 管理員頁面 - 首頁
   
@@ -56,8 +61,6 @@ function initNormal() {
   app.post("/admin/courses/", adminCoursesCtrl.updateCourse);           // Ajax 接口(後端獲取資料) : 課程清單 - 修改課程資料
   app.propfind("/coursesData/:cid", adminCoursesCtrl.checkCourseExist);       // Ajax 接口(後端獲取資料) : 課程清單 - 檢查該課程編號是否存在
   
-  app.get("/", mainCtrl.showIndex);                      // 顯示首頁
-  app.get("/login", mainCtrl.showLogin);                      // 顯示登入頁面
   app.post("/login", mainCtrl.doLogin);                        // 驗證登入內容
   app.get("/logout", mainCtrl.doLogout);                       // 執行登出動作
   app.get("/changePWD", mainCtrl.showChangePWD);                  // 顯示密碼更改頁面

@@ -16,40 +16,6 @@ exports.show404 = function(req, res){
     res.send("404 你的網頁不存在")
 }
 
-
-// 顯示首頁
-exports.showIndex = function(req, res){
-    // 檢查使用者身上是否有 session，若沒有就跳轉至登入頁面
-    if(req.session.login != true){
-        // 重定向
-        res.redirect("/login");
-        return;
-    }else{
-        // 從 session 中獲得使用者帳號、名稱以及是否為初始密碼
-        var userID   = req.session.userID;
-        var userName = req.session.userName;
-        var initpassword = req.session.initpassword;
-        var grade = req.session.grade;
-
-        // 若為初始密碼，則仍無法讀取首頁，必須強制跳轉到更改密碼頁面
-        if(initpassword){
-            res.redirect("/changePWD");
-        }else{
-            res.render("index", {
-                "nowPage"  : "index",
-                "userID"   : userID,
-                "userName" : userName,
-                "userGrade" : grade
-            })
-        }
-    }
-}
-
-// 顯示登入頁面
-exports.showLogin = function(req, res){
-    res.render("login",{})
-}
-
 // 登入內容會以 post 方式提交，所以用 formidable 處理
 // 先驗證帳號是否存在，若有，則檢查密碼是否為初始密碼(initPassword 為 true 表示為初始密碼)
 // 初始密碼直接比對即可
