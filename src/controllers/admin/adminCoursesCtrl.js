@@ -8,7 +8,7 @@ var fs = require("fs");
 var xlsx = require("node-xlsx");
 var url = require("url");
 var dateFormat = require('dateformat');
-var Course = require("../../models/Course.js");
+var Course = require("../../models/Course");
 var mongoose = require("mongoose");
 
 

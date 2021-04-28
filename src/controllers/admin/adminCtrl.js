@@ -6,7 +6,7 @@ var formidable = require("formidable");
 var path = require("path");
 var fs = require("fs");
 var xlsx = require("node-xlsx");
-var Student = require("../../models/Student.js");
+var Student = require("../../models/Student");
 var url = require("url");
 var dateFormat = require('dateformat');
 

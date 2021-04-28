@@ -271,7 +271,7 @@ exports.doForgetPWD = function(req, res){
 }
 
 // 隨機密碼生成函數
-RandomPassword = function(){
+const RandomPassword = function(){
     // 等等加密用的字元
     var str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789&%$#@!"
     var pwd = "";
