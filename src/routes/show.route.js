@@ -9,4 +9,7 @@ router.route('/login')
 router.route('/admin')
   .get(ctrl.showAdminDashboard)
 
+router.route('/admin/addStudents')
+  .get(ctrl.showAddStudent)
+
 export default router

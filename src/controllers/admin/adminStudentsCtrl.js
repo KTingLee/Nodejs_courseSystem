@@ -167,14 +167,6 @@ exports.updateStudent = function(req, res){
 
 }
 
-// 增加學生頁面
-exports.showAdminStudentsAdd = function(req, res){
-    res.render("admin/students/adminStudentsAdd", {
-        "page"  : "students",
-        "level" : "admin"
-    })
-}
-
 // 檢查學生是否存在
 exports.checkStudentExist = function(req, res){
     // 獲得學生學號

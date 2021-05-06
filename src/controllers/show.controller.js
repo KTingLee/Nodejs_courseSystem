@@ -39,4 +39,11 @@ function showAdminDashboard(req, res, next) {
   return
 }
 
-export default { showIndex, showLogin, showAdminDashboard }
+function showAddStudent(req, res, next) {
+  res.render('admin/students/adminStudentsAdd', {
+    page: 'students',
+    level: 'admin'
+  })
+}
+
+export default { showIndex, showLogin, showAdminDashboard, showAddStudent }
