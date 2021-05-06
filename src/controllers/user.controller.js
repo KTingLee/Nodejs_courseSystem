@@ -43,13 +43,17 @@ async function load (req, res, next, id) {
 }
 
 async function list (req, res, next) {
+  if (req.query.showAll) {
+    const results = await Model.find({})
+    return res.status(httpStatus.OK).json(results)
+  }
+
   const page = req.query.page // 目前讀取的是第幾頁
   const rows = req.query.rows // 每頁要顯示幾筆資料
   const sidx = req.query.sidx // 以哪個 index 排序
   
   // 若有輸入快速查詢，則會放在 keyword 屬性中，並動態產生過濾內容 findFilter
-  const keyword = req.query.keyword
-  const findFilter = _makeRegex(keyword)
+  const findFilter = _makeRegex(req.query.keyword)
 
   // 因為不能確定以哪個 index 排序，所以建立一個 JSON 物件，並附上屬性
   const sort = (req.query.sord === 'asc') ? 1 : -1

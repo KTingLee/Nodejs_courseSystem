@@ -18,7 +18,7 @@
     function pageInit(){
         jQuery("#studentsTable").jqGrid(
                 {
-                    url : '/api/users',  // 獲取學生資料接口
+                    url : '/api/users?showAll=true',  // 獲取學生資料接口
                     datatype : 'json',
                     colNames : [ '學號', '姓名', '年級', '密碼', '是否為初始密碼'],
                     colModel : [ 
