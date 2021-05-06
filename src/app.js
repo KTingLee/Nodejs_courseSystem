@@ -8,13 +8,16 @@ import adminCoursesCtrl from "./controllers/admin/adminCoursesCtrl.js"
 import mainCtrl from "./controllers/mainCtrl.js"
 import showCtrl from './controllers/show.controller.js'
 import showRoutes from './routes/show.route.js'
+import routes from './routes/index.route.js'
 
 const app = express()
-const debug = require('debug')('bxb:app')
+const debug = require('debug')('app:app')
 const MongoStore = require('connect-mongo')
+const PORT = 3000
 
 // 連結資料庫 - CourseSystem  (記得先打開數據庫)
 mongoose.connect('mongodb://localhost/CourseSystem', { useNewUrlParser: true })
+const initDB = require('./initDB')
 
 initNormal()
 
@@ -32,6 +35,7 @@ function initNormal() {
 
   app.get('/', showCtrl.showIndex)
   app.use('/show', showRoutes)
+  app.use('/api', routes)
   // app.get("/login", mainCtrl.showLogin);                      // 顯示登入頁面
 
   app.get("/admin", adminStudentsCtrl.showAdminStudents);         // 管理員頁面 - 首頁
@@ -62,7 +66,6 @@ function initNormal() {
   app.propfind("/coursesData/:cid", adminCoursesCtrl.checkCourseExist);       // Ajax 接口(後端獲取資料) : 課程清單 - 檢查該課程編號是否存在
   
   app.post("/login", mainCtrl.doLogin);                        // 驗證登入內容
-  app.get("/logout", mainCtrl.doLogout);                       // 執行登出動作
   app.get("/changePWD", mainCtrl.showChangePWD);                  // 顯示密碼更改頁面
   app.post("/changePWD", mainCtrl.doChangePWD);                    // 執行修改密碼
   app.get("/forget", mainCtrl.forgetPWD);                      // 顯示忘記密碼頁面
@@ -73,8 +76,6 @@ function initNormal() {
   app.get("/myCourses", mainCtrl.showMyCourses);                  // 所選課程頁面
   app.propfind("/myCourses", mainCtrl.getMyCourses);                   // 所選課程資訊
   
-  app.post("/authLogin", adminCtrl.authLogin);                     // 管理員登入頁面
-  
   app.get("/admin/reports", adminCtrl.showAdminReports);  // 管理員頁面 - 課程報表頁面
   
   // 提供靜態資料夾，這樣 public 資料夾就等同於根目路(/)
@@ -83,7 +84,7 @@ function initNormal() {
   // 設置 404 頁面，如果請求的路由沒有在路由清單也不在靜態資料夾，就會執行這段
   app.use(mainCtrl.show404)
   
-  app.listen(3000, () => { console.log("選課系統啟動囉！") })
+  app.listen(PORT, () => { console.log(`選課系統啟動囉！前往 ${PORT} port 查看...`) })
 }
 
 

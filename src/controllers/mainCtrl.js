@@ -86,17 +86,6 @@ exports.doLogin = function(req, res){
     })
 }
 
-
-// 登出的方式就是將 session 拿掉
-exports.doLogout = function(req, res){
-    req.session.login = false;
-    req.session.userID = '';
-
-    res.redirect("/login")
-    return;
-}
-
-
 // 顯示密碼更改頁面
 exports.showChangePWD = function(req, res){
     var userID = req.session.userID;

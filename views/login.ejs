@@ -95,11 +95,12 @@
 <div class="container-fluid" id="authArea">
     <div class="col-lg-6">
         <!-- 利用 form 來傳遞表單，因為用 ajax 無法在後端重定向，別忘了表單要加上 name="" ，來說明值的 key -->
-        <form method="post" action="/authLogin" enctype="multipart/form-data">
+        <form method="post" action="/api/auth/login">
             <p>管理員帳號：</p>
-            <input type="text" name="authID" id="authID">
+            <input type="text" name="userId" id="userId">
             <p>管理員密碼：</p>
-            <input type="password" name="authPWD" id="authPWD">
+            <input type="password" name="password" id="password">
+            <input type="text" name="type" value="traditional" style="display: none;">
             <p>
                 <input type="submit" value="登入">
                 <input type="button" value="取消" id="cancel">
@@ -168,21 +169,29 @@
     })
 
     // 監聽管理員面板中的登入按鈕
-    $("#authLogin").click(function(){
-        var authID  = $("#authID").val();
-        var authPWD = $("#authPWD").val();
+    $('#authLogin').click(function(){
+        const userId  = $('#userId').val()
+        const password = $('#password').val()
         
-        $.post("/authLogin", {
-            "authID" : authID,
-            "authPWD": authPWD
-        }, function(mes){
-            if(mes.results == "-2"){
-                $("#authID").val("");
-                $("#authPWD").val("");
-                alert("登入失敗");
-                $("#authArea").css({"display" : "none"});
-            }else{
-                window.location = mes.results;
+        $.ajax({
+            type: 'POST',
+            url: '/api/auth/login',
+            data: {
+                userId: userId,
+                password: password,
+                type: 'ajax'
+            },
+            dataType: 'json',
+            success: function (msg) {
+                window.location = mes.results
+                return
+            },
+            error: function (msg) {
+                $('#authID').val('')
+                $('#authPWD').val('')
+                alert('登入失敗')
+                $('#authArea').css({display: 'none'})
+                return
             }
         })
     })    
