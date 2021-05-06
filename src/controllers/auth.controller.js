@@ -35,7 +35,7 @@ function logout(req, res, next) {
   delete req.session.userId
   delete req.session.username
 
-  return res.redirect('api/show/login')
+  return res.redirect('/show/login')
 }
 
 module.exports = { login, logout }

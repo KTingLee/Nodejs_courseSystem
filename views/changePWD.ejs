@@ -128,7 +128,7 @@
         }, function(mes){
             if(mes.results == 1){
                 alert("修改成功！即將登出...")
-                window.location = "/logout"
+                window.location = "/api/auth/logout"
             }else if(mes.results == -1){
                 alert("伺服器錯誤！")
             }else if(mes.results == -2){
