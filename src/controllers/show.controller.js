@@ -25,8 +25,18 @@ function showIndex(req, res, next) {
 }
 
 function showLogin(req, res, next) {
-  return res.render("login",{})
+  return res.render("login", {})
 }
 
+function showAdminDashboard(req, res, next) {
+  const isAjax = req.query.Ajax ? true : false
 
-export default { showIndex, showLogin, }
+  res.render('admin/students/adminStudents', {
+    AjaxImport: isAjax,
+    page: 'students',
+    level: 'admin'
+  })
+  return
+}
+
+export default { showIndex, showLogin, showAdminDashboard }

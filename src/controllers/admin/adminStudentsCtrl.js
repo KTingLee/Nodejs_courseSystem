@@ -12,21 +12,7 @@ var dateFormat = require('dateformat');
 
 
 // 超級使用者學生清單頁面(主頁面)
-exports.showAdminStudents = function(req, res){
-    // 分析學生清單的接口是 所有學生資料 還是 分批的學生資料
-    var AjaxImport = '';
-    if(url.parse(req.url, true).query.Ajax){
-        AjaxImport = url.parse(req.url, true).query.Ajax;
-    }else{
-        AjaxImport = false;
-    }
-    res.render("admin/students/adminStudents", {
-        // 分析是否為 Ajax 
-        "AjaxImport" : AjaxImport,
-        "page"  : "students",
-        "level" : "admin"
-    })
-}
+
 
 // 超級使用者學生清單頁面(導入學生頁面)
 exports.showAdminStudentsImport = function(req, res){
