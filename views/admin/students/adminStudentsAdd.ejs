@@ -43,13 +43,13 @@
                             學號：
                         </p>
                         <p>
-                            <input type="text" class="form-control" id="stu_id" checkValid />
+                            <input type="text" class="form-control" id="id" checkValid />
                         </p>
                         <p>
                             姓名：
                         </p>
                         <p>
-                            <input type="text" class="form-control" id="Name" checkValid />
+                            <input type="text" class="form-control" id="name" checkValid />
                         </p>
                         <p>
                             年級：
@@ -85,10 +85,10 @@
     // 建立一個物件，用以判斷輸入框是否都合格，當 invalid 的所有元素值都為 false 才會讓提交鈕可點選
     function invalidInit(){
         return invalid = {
-            "stu_id" : true,
-            "Name"   : true,
-            "grade"  : true,
-            "password" : true
+            id: true,
+            name: true,
+            grade: true,
+            password: true
         }
     }
     var invalid = invalidInit();
@@ -100,33 +100,32 @@
     }
 
 
-    // 檢驗學號，檢查是否為 8 位數字，若合格，則 invalid 中的 stu_id 值便為 false
+    // 檢驗學號，檢查是否為 8 位數字，若合格，則 invalid 中的 id 值便為 false
     // 若驗證沒過還會增加提示
-    $("#stu_id").blur(function(){
-        var stu_id = $(this).val();
-        if(!/^[\d]{8}$/.test(stu_id)){
+    $('#id').blur(function(){
+        const id = $(this).val()
+        if(!/^[\d]{8}$/.test(id)){
             // after 表示某元素後方建立新元素
-            $(this).after(alertTip("danger", "學號必須為 8 位數字。"))
-            invalid.stu_id = true;
-            return;
+            $(this).after(alertTip('danger', '學號必須為 8 位數字。'))
+            invalid.id = true
+            return
         }
 
-        // 目前的 this 是指向 #stu_id 物件，但等等 ajax 函數中的 this 會指向 ajax 函數本身(除非用箭頭)
-        // 所以先將 "指向 #stu_id 的 this" 保存(變數可用 $ 做為開頭)
-        var $this = $(this)
+        // 目前的 this 是指向 #id 物件，但等等 ajax 函數中的 this 會指向 ajax 函數本身(除非用箭頭)
+        // 所以先將 "指向 #id 的 this" 保存(變數可用 $ 做為開頭)
+        const $this = $(this)
 
         // 向後端確認該學號是否存在
         $.ajax({
-            "url"  : "/studentsData/" + stu_id,
-            "type" : "propfind",
-            "success" : function(mes){
-                if(mes.results == 0){
-                    invalid.stu_id = false;
-                    $($this).after(alertTip("success", "學號可使用。"));
-                }else{
-                    invalid.stu_id = true;
-                    $($this).after(alertTip("warning", "學號已存在。"));
-                }
+            url: `/api/users/${id}`,
+            type: 'get',
+            error: function (msg) {
+                invalid.id = false
+                $($this).after(alertTip('success', '學號可使用。'))
+            },
+            success: function(msg){
+                invalid.id = true
+                $($this).after(alertTip('warning', '學號已存在。'))
             }
         })
     })
@@ -135,118 +134,117 @@
     // 學習對 jQuery 物件新增靜態方法，讓警告框的操作更優雅
     // .fn.extend 可以在 jQuery 物件上新增靜態方法，供 jQuery 物件使用
     $.fn.extend({
-        "alertTip2" : function(className, content){
+        alertTip2: function(className, content){
             // this 指向 "使用該靜態方法的 jQuery 物件本身"
             this.after(
-                $("<div class='alert myalert alert-" + className + "'>" + content + "</div>")
-            );
+                $(`<div class='alert myalert alert-${className}'>${content}</div>`)
+            )
         },
-
-        "clearTip" : function(){
+        clearTip: function(){
             // 刪除元素後方的警告框(class 包含 alert 者)
-            this.nextAll(".alert").remove();
+            this.nextAll('.alert').remove()
         }
     })
 
 
-    // 驗證姓名是否為空，若不為空，則 invalid 的 Name 屬性變為 false
+    // 驗證姓名是否為空，若不為空，則 invalid 的 name 屬性變為 false
     // 這邊的警告框是以靜態方法建立的
-    $("#Name").blur(function(){
-        var Name = $(this).val();
-        if(Name != ''){
-            invalid.Name = false;
-            $(this).alertTip2("success", "OK!")
-        }else{
+    $('#name').blur(function(){
+        const name = $(this).val()
+        if(!name){
             // after 表示某元素後方建立新元素，以靜態方法產生
-            $(this).alertTip2("danger", "姓名不能為空")
-            invalid.Name = true;
+            $(this).alertTip2('danger', '姓名不能為空')
+            invalid.name = true
+        }else{
+            invalid.name = false
+            $(this).alertTip2('success', 'OK!')
         }
     })
 
     // 驗證年級是否有選擇，採用 change 事件做檢查(只要值有改變就觸發 change 事件)
-    $("#grade").change(function(){
-        var grade = $(this).val();
-        if(grade != ''){
-            invalid.grade = false;
-        }else{
+    $('#grade').change(function(){
+        const grade = $(this).val()
+        if(!grade){
             // after 表示某元素後方建立新元素，以靜態方法產生
-            $(this).alertTip2("danger", "年級尚未選擇")
-            invalid.grade = true;
+            $(this).alertTip2('danger', '年級尚未選擇')
+            invalid.grade = true
+        }else{
+            invalid.grade = false
         }
     })    
 
     // 提供初始密碼
-    $("#password").blur(function(){
-        var password = $(this).val();
-        if(password != ''){
-            invalid.password = false;
-            $(this).alertTip2("success", "OK!")
-        }else{
+    $('#password').blur(function(){
+        const password = $(this).val()
+        if(!password){
             // after 表示某元素後方建立新元素，以靜態方法產生
-            $(this).alertTip2("danger", "密碼不能為空")
-            invalid.password = true;
+            $(this).alertTip2('danger', '密碼不能為空')
+            invalid.password = true
+        }else{
+            invalid.password = false
+            $(this).alertTip2('success', 'OK!')
         }
     })
 
 
 
     // 當輸入框在輸入時，應該消除其警告框
-    $("[checkValid]").focus(function(){
-        $(this).clearTip();
+    $('[checkValid]').focus(function(){
+        $(this).clearTip()
     })
 
     // 檢查含有 checkValid 屬性的元素是否都合格(只要任一輸入框 blur 就檢查)
-    $("[checkValid]").blur(function(){
+    $('[checkValid]').blur(function(){
         console.log(invalid)
-        var allValid = true;
+        const allValid = true
         for(let k in invalid){
             // 當 invalid 有一項為 true，表示有輸入框不合格，並跳出迴圈
             if(invalid[k]){
-                allValid = false;
-                break;
+                allValid = false
+                break
             }
         }
         // 若所有輸入框皆合格，則讓提交鈕可點選
         if(allValid){
-            $("#subBtn").attr('disabled', false);
+            $('#subBtn').attr('disabled', false)
         }else{
-            $("#subBtn").attr('disabled', true);
+            $('#subBtn').attr('disabled', true)
         }
     })
 
 
     // 當提交按鈕按下時，檢查輸入框是否都合格，若合格便向後端發送 post 請求
-    $("#subBtn").click(function(){
+    $('#subBtn').click(function(){
         // 獲得輸入框的值
-        var stu_id = $("#stu_id").val();
-        var Name = $("#Name").val();
-        var grade = $("#grade").val();
-        var password = $("#password").val();
+        const id = $('#id').val()
+        const name = $('#name').val()
+        const grade = $('#grade').val()
+        const password = $('#password').val()
 
         // 向後端提交資料
         $.post('/admin/students/add', {
-            "stu_id" : stu_id,
-            "Name" : Name,
-            "grade" : grade,
-            "password" : password
-        }, function(mes){
+            'id': id,
+            'name': name,
+            'grade': grade,
+            'password': password
+        }, function(msg){
             // 成功跳提示，並清除輸入框內容，以及重置 invalid 物件
-            if(mes.results == 1){
+            if(msg.results == 1){
                 alert('已成功新增學生！')
                 $.each($('[checkValid]'), function(index, item){
-                    $(item).val('').clearTip();
-                });
-            }else if(mes.results == -1){
+                    $(item).val('').clearTip()
+                })
+            }else if(msg.results == -1){
                 alert('伺服器出錯了..')
-            }else if(mes.results == -2){
+            }else if(msg.results == -2){
                 alert('別亂改網頁原始碼，我還是會知道你學號不正確的！')
-            }else if(mes.results == -3){
+            }else if(msg.results == -3){
                 alert('別亂改網頁原始碼，我還是會知道你名字沒有填的！')
-            }else if(mes.results == -4){
+            }else if(msg.results == -4){
                 alert('別亂改網頁原始碼，我還是會知道你年級還沒選的！')
-            }else if(mes.results == -5){
+            }else if(msg.results == -5){
                 alert('別亂改網頁原始碼，我還是會知道你密碼還沒填的！')
-            }else if(mes.results == -6){
+            }else if(msg.results == -6){
                 alert('別亂改網頁原始碼，我還是會知道你學號是重複的！')
             }
         })

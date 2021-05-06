@@ -2,14 +2,14 @@ import { Router } from 'express'
 import httpStatus from 'http-status'
 
 import authRoutes from './auth.route'
-// import userRoutes from './user.route'
+import userRoutes from './user.route'
 
 const debug = require('debug')('app:route:index')
 
 const router = Router()
 
 router.use('/auth', authRoutes)
-// router.use('/users', checkAuth, userRoutes)
+router.use('/users', checkAuth, userRoutes)
 
 
 function checkAuth (req, res, next) {
