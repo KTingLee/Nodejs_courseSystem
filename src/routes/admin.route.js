@@ -1,12 +1,12 @@
 import express from 'express'
 import ctrl from '../controllers/show.controller'
-import adminRoutes from './admin.route'
 
 const router = express.Router()
 
-router.use('/admin', adminRoutes)
+router.route('/')
+  .get(ctrl.showAdminDashboard)
 
-router.route('/login')
-  .get(ctrl.showLogin)
+router.route('/addStudents')
+  .get(ctrl.showAddStudent)
 
 export default router
