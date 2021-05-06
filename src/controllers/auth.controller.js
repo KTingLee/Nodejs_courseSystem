@@ -19,7 +19,7 @@ async function login(req, res, next) {
 
   req.session.authenticated = true
   req.session.userId = user.id
-  req.session.username = username
+  req.session.username = user.username
 
   // 利用傳統表單傳遞管理員帳密，可在後端重定向
   if (type === 'traditional') {
@@ -31,12 +31,11 @@ async function login(req, res, next) {
 }
 
 function logout(req, res, next) {
-  // delete req.session.authenticated
-  // delete req.session.userId
-  // delete req.session.username
-  req.session = {}
+  delete req.session.authenticated
+  delete req.session.userId
+  delete req.session.username
 
-  return res.redirect('/show/login')
+  return res.redirect('api/show/login')
 }
 
 module.exports = { login, logout }

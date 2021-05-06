@@ -183,7 +183,8 @@
             },
             dataType: 'json',
             success: function (msg) {
-                window.location = mes.results
+                console.log(window.location);
+                window.location = msg.results
                 return
             },
             error: function (msg) {

@@ -9,7 +9,7 @@ router.route('/login')
   .post(ctrl.login)
 
 router.route('/logout')
-  .post(ctrl.logout)
+  .get(ctrl.logout)
 
 // router.route('/passwd').post(validate(paramValidation.passwd), ctrl.passwd)
 
