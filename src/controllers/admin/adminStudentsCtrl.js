@@ -61,42 +61,6 @@ exports.uploadStudentsExcel = function(req, res){
     });
 }
 
-// 更新學生資料(學生清單頁面，修改後會發送 POST 請求，內含修改資料，在後端修改後，向前端發送修改結果)
-// 因為是 POST 請求，所以用 formidable 解析
-exports.updateStudent = function(req, res){
-    // 獲得學生學號
-    var stu_id = req.params.sid;
-    
-    const form = formidable({});
-    form.parse(req, (err, fields, files) => {
-        // 解析 POST 內容：cellName 與 value 是由學生清單頁面傳來的參數
-        var key = fields.cellName;
-        var value = fields.value;
-
-        // 修改資料庫數據
-        Student.find({"stu_id":stu_id}, function(err, results){
-            if(err){
-                res.send({"results": -2});  // 向前端回傳 -2 表示數據庫錯誤
-                return;
-            }
-            if(results.length == 0){
-                res.send({"results": -1});  // 向前端回傳 -1 表示資料庫沒有這筆資料
-                return;
-            }
-            var thisStudent = results[0];
-            thisStudent[key] = value;
-            thisStudent.save(function(err){
-                if(err){
-                    res.send({"results": -2}); // 向前端回傳 -2 表示數據庫錯誤
-                }else{
-                    res.send({"results":  1}); // 向前端回傳 1 表示修改成功
-                }
-            })
-        })
-    })
-
-}
-
 // 檢查學生是否存在
 exports.checkStudentExist = function(req, res){
     // 獲得學生學號

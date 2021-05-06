@@ -60,18 +60,22 @@ async function list (req, res, next) {
   let sortObj = {}
   sortObj[sidx] = sort
 
-  const count = await Model.countDocuments(findFilter)
-  const totalPages = Math.ceil(count / rows)  // jqGrid 的總頁數(會根據 rows 而有所改變)
-
-  // 輸出學生資料，格式必須依照 jqGrid 的 API 要求
-  const results = await Model.find(findFilter).sort(sortObj).limit(parseInt(rows)).skip(rows * (page - 1)).exec()
-  const ret = {
-    page: page,
-    total: totalPages,
-    records: count,
-    rows: results
+  try {
+    const count = await Model.countDocuments(findFilter)
+    const totalPages = Math.ceil(count / rows)  // jqGrid 的總頁數(會根據 rows 而有所改變)
+  
+    // 輸出學生資料，格式必須依照 jqGrid 的 API 要求
+    const results = await Model.find(findFilter).sort(sortObj).limit(parseInt(rows)).skip(rows * (page - 1)).exec()
+    const ret = {
+      page: page,
+      total: totalPages,
+      records: count,
+      rows: results
+    }
+    return res.status(httpStatus.OK).json(ret)
+  } catch (e) {
+    next(e)
   }
-  return res.status(httpStatus.OK).json(ret)
 
   function _makeRegex (keyword) {
     if (!keyword) return {}
@@ -88,4 +92,12 @@ async function list (req, res, next) {
   }
 }
 
-export default { get, load, add, list, }
+async function set (req, res, next) {
+  let obj = req.obj
+  console.log(req.body);
+  Object.assign(obj, req.body)
+  const result = obj.save()
+  return res.status(httpStatus.OK).json(result)
+}
+
+export default { get, load, add, list, set, }

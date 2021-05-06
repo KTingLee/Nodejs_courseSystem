@@ -57,14 +57,13 @@
                     // rowid 預設是 jqGrid 自己的列編號，但若在 colModel 中，有對某個欄位設定 key: true，則 rowid 將變為該欄位的值
                     afterSaveCell : function(rowid, cellname, value, iRow, iCol){
                         // 依照選擇的 cell 獲得學號，這邊不把學號設成主鍵，所以要自己抓值
-                        const sid = $('#studentsTable').getCell(iRow, 1)
+                        // const sid = $('#studentsTable').getCell(iRow, 1)
 
                         // 向後端發送 Ajax 請求(採用POST請求)，以利後端修改學生資料，並等待後端回應
                         $.ajax({
                             type: 'PUT',
-                            url: `/api/users/${sid}`,
+                            url: `/api/users/${rowid}`,
                             data: {
-                                id: sid,
                                 [cellname]: value,
                             },
                             dataType: 'json',
