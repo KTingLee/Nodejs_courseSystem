@@ -38,7 +38,6 @@ function initNormal() {
   app.use('/api', routes)
   
   app.post("/admin/students/import", adminStudentsCtrl.uploadStudentsExcel);      // 管理員頁面 - 導入學生頁面(上傳學生資料，並生成學生密碼)
-  app.post("/admin/students/add", adminStudentsCtrl.doAdminStudentsAdd);       // 管理員頁面 - 新增學生頁面(增加一位學生至資料庫)
   app.delete("/admin/students/delete", adminStudentsCtrl.deleteStudents);           // 管理員頁面 - 學生主頁面(刪除學生)
   app.get("/admin/students/download", adminStudentsCtrl.downloadStudents);         // 管理員頁面 - 學生主頁面(下載學生資料)
   

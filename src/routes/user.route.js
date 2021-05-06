@@ -5,9 +5,9 @@ import ctrl from '../controllers/user.controller'
 
 const router = express.Router()
 
-// router.route('/')
+router.route('/')
   // .get(ctrl.list)
-  // .post(validate(paramValidation.add), acl.checkAdmin, ctrl.add)
+  .post(ctrl.add)
 
 router.route('/:id')
   .get(ctrl.get)

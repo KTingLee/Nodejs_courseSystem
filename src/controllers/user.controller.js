@@ -1,6 +1,21 @@
+import debug from 'debug'
 import httpStatus from 'http-status'
 // import APIError from '../middlewares/errors/APIError'
 import Model from '../models/user.model'
+
+async function add (req, res, next) {
+  const user = await Model.findOne({id: req.body.id})
+  if (user) {
+    return res.status(httpStatus.BAD_REQUEST).json({message: 'user already exist'})
+  }
+
+  try {
+    await Model.create(req.body)
+    return res.status(httpStatus.OK).json({data: 'ok'})
+  } catch (e) {
+    next(e)
+  }
+}
 
 function get (req, res, next) {
   const obj = req.obj
@@ -28,4 +43,4 @@ async function load (req, res, next, id) {
 }
 
 
-export default { get, load, }
+export default { get, load, add, }

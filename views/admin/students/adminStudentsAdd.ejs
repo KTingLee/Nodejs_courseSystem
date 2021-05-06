@@ -222,30 +222,26 @@
         const password = $('#password').val()
 
         // 向後端提交資料
-        $.post('/admin/students/add', {
-            'id': id,
-            'name': name,
-            'grade': grade,
-            'password': password
-        }, function(msg){
-            // 成功跳提示，並清除輸入框內容，以及重置 invalid 物件
-            if(msg.results == 1){
+        $.ajax({
+            type: 'POST',
+            url: '/api/users',
+            data: {
+                id: id,
+                name: name,
+                grade: grade,
+                password: password
+            },
+            dataType: 'json',
+            success: function (msg) {
                 alert('已成功新增學生！')
                 $.each($('[checkValid]'), function(index, item){
                     $(item).val('').clearTip()
                 })
-            }else if(msg.results == -1){
-                alert('伺服器出錯了..')
-            }else if(msg.results == -2){
-                alert('別亂改網頁原始碼，我還是會知道你學號不正確的！')
-            }else if(msg.results == -3){
-                alert('別亂改網頁原始碼，我還是會知道你名字沒有填的！')
-            }else if(msg.results == -4){
-                alert('別亂改網頁原始碼，我還是會知道你年級還沒選的！')
-            }else if(msg.results == -5){
-                alert('別亂改網頁原始碼，我還是會知道你密碼還沒填的！')
-            }else if(msg.results == -6){
-                alert('別亂改網頁原始碼，我還是會知道你學號是重複的！')
+                return
+            },
+            error: function (msg) {
+                alert('新增失敗')
+                return
             }
         })
     })
