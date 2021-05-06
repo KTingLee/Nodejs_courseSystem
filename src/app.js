@@ -41,7 +41,6 @@ function initNormal() {
   app.delete("/admin/students/delete", adminStudentsCtrl.deleteStudents);           // 管理員頁面 - 學生主頁面(刪除學生)
   app.get("/admin/students/download", adminStudentsCtrl.downloadStudents);         // 管理員頁面 - 學生主頁面(下載學生資料)
   
-  app.get("t/studentsData/allExpor", adminStudentsCtrl.showAdminAllStudents);     // Ajax 接口(前端獲取資料) : 學生主頁面 - 獲取所有學生資料
   app.get("/studentsData/partExport", adminStudentsCtrl.showAdminPartStudents);    // Ajax 接口(前端獲取資料) : 學生主頁面 - 獲取部分學生資料
   app.post("/studentsData/:sid", adminStudentsCtrl.updateStudent);            // Ajax 接口(後端獲取資料) : 學生主頁面 - 修改學生
   app.propfind("/studentsData/:sid", adminStudentsCtrl.checkStudentExist);        // Ajax 接口(後端獲取資料) : 學生主頁面 - 檢查學生學號是否存在

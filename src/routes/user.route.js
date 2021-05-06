@@ -6,7 +6,7 @@ import ctrl from '../controllers/user.controller'
 const router = express.Router()
 
 router.route('/')
-  // .get(ctrl.list)
+  .get(ctrl.list)
   .post(ctrl.add)
 
 router.route('/:id')

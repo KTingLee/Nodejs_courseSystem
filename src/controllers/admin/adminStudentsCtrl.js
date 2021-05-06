@@ -6,7 +6,7 @@ var formidable = require("formidable");
 var path = require("path");
 var fs = require("fs");
 var xlsx = require("node-xlsx");
-var Student = require("../../models/Student");
+var Student = require("../../models/user.model");
 var url = require("url");
 var dateFormat = require('dateformat');
 
@@ -59,13 +59,6 @@ exports.uploadStudentsExcel = function(req, res){
             }
         })
     });
-}
-
-// 超級使用者學生清單頁面的接口 (一口氣導出所有學生)
-exports.showAdminAllStudents = function(req, res){
-    Student.find({}, function(err, results){
-        res.send(results)
-    })
 }
 
 // 超級使用者學生清單頁面的接口 (依照前端請求的數量導出學生)

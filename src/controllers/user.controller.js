@@ -42,5 +42,9 @@ async function load (req, res, next, id) {
   }
 }
 
+async function list (req, res, next) {
+  const users = await Model.find({})
+  return res.status(httpStatus.OK).json(users)
+}
 
-export default { get, load, add, }
+export default { get, load, add, list, }

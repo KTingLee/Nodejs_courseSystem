@@ -18,21 +18,20 @@
     function pageInit(){
         jQuery("#studentsTable").jqGrid(
                 {
-                    url : '/studentsData/allExport',  // 獲取學生資料接口
-                    datatype : "json",
+                    url : '/api/users',  // 獲取學生資料接口
+                    datatype : 'json',
                     colNames : [ '學號', '姓名', '年級', '密碼', '是否為初始密碼'],
                     colModel : [ 
-                                 {name : 'stu_id',         width : 55, key:true},
-                                 {name : 'Name',           width : 90, editable:true},
-                                 {name : 'grade',          width : 90, editable:true, edittype : "select",
-                                        editoptions : {value : "國一:國一;國二:國二;國三:國三;高一:高一;高二:高二;高三:高三"}},
-                                 {name : 'password',       width : 100, editable:true},
-                                 {name : 'initpassword',   width : 80,align : "right", editable:true}
-                               ],
+                                 {name: 'id', width: 55, key: true},
+                                 {name: 'name', width: 90, editable: true},
+                                 {name: 'grade', width: 90, editable: true, edittype: 'select', editoptions: {value: '國一:國一;國二:國二;國三:國三;高一:高一;高二:高二;高三:高三'}},
+                                 {name: 'password', width: 100, editable: true},
+                                 {name: 'initpassword', width: 80, align: 'right', editable: true}
+                                ],
                     rowNum : 10,
                     rowList : [ 10, 20, 30 ],
                     pager : '#pageNav',
-                    sortname : 'stu_id',
+                    sortname : 'id',
                     viewrecords : true,
                     sortorder : "asc",
                     loadonce: true,
@@ -40,29 +39,33 @@
                     height : 210,
                     autowidth  : true,
                     cellEdit : true,
-                    cellsubmit : "clientArray",
+                    cellsubmit : 'clientArray',
 
                     // cell 儲存後(按Enter後) 觸發 afterSaveCell 函數，會回傳該 cell: jqGrid定義的流水號id、欄位標題、更改後的值、位於哪列哪行
                     // rowid 預設是 jqGrid 自己的列編號，但若在 colModel 中，有對某個欄位設定 key: true，則 rowid 將變為該欄位的值
                     afterSaveCell : function(rowid, cellname, value, iRow, iCol){
                         // 因為把 stu_id 設為主鍵，故此時 jqGrid 的 rowid 將直接採用 stu_id
                         // 向後端發送 Ajax 請求(採用POST請求)，以利後端修改學生資料，並等待後端回應
-                        $.post('/studentsData/' + rowid,{
-                            "stu_id" : rowid,
-                            "cellName" : cellname,
-                            "value" : value
-                        }, function(mes){
-                            if(mes.results == 1){
+                        $.ajax({
+                            type: 'PUT',
+                            url: `/api/users/${rowid}`,
+                            data: {
+                                id: rowid,
+                                [cellname]: value,
+                            },
+                            dataType: 'json',
+                            success: function (msg) {
                                 showTip('修改成功！')
-                            }else if(mes.results == -1){
-                                showTip("修改失敗，資料庫中沒有這位學生")
-                            }else if(mes.results == -2){
-                                showTip("連接資料庫失敗")
+                                return
+                            },
+                            error: function (msg) {
+                                showTip('修改失敗，資料庫中沒有這位學生')
+                                return
                             }
                         })
                     }
                 });
-        jQuery("#studentsTable").jqGrid('navGrid', '#pageNav', {edit : false,add : false,del : false});
-        jQuery("#studentsTable").jqGrid('inlineNav', "#pageNav");
+        jQuery('#studentsTable').jqGrid('navGrid', '#pageNav', {edit: false, add: false, del: false})
+        jQuery('#studentsTable').jqGrid('inlineNav', '#pageNav')
     }
 </script>
