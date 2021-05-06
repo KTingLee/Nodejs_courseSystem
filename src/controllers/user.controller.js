@@ -43,8 +43,45 @@ async function load (req, res, next, id) {
 }
 
 async function list (req, res, next) {
-  const users = await Model.find({})
-  return res.status(httpStatus.OK).json(users)
+  const page = req.query.page // 目前讀取的是第幾頁
+  const rows = req.query.rows // 每頁要顯示幾筆資料
+  const sidx = req.query.sidx // 以哪個 index 排序
+  
+  // 若有輸入快速查詢，則會放在 keyword 屬性中，並動態產生過濾內容 findFilter
+  const keyword = req.query.keyword
+  const findFilter = _makeRegex(keyword)
+
+  // 因為不能確定以哪個 index 排序，所以建立一個 JSON 物件，並附上屬性
+  const sort = (req.query.sord === 'asc') ? 1 : -1
+  let sortObj = {}
+  sortObj[sidx] = sort
+
+  const count = await Model.countDocuments(findFilter)
+  const totalPages = Math.ceil(count / rows)  // jqGrid 的總頁數(會根據 rows 而有所改變)
+
+  // 輸出學生資料，格式必須依照 jqGrid 的 API 要求
+  const results = await Model.find(findFilter).sort(sortObj).limit(parseInt(rows)).skip(rows * (page - 1)).exec()
+  const ret = {
+    page: page,
+    total: totalPages,
+    records: count,
+    rows: results
+  }
+  return res.status(httpStatus.OK).json(ret)
+
+  function _makeRegex (keyword) {
+    if (!keyword) return {}
+
+    // 將快速查詢的結果轉成正規表達式物件，並做全局搜索，意即 /keyword/g  (其中 keyword 是網址列中的參數)
+    const regexp = new RegExp(keyword, 'g')
+    return {
+      $or: [
+        {id: regexp},
+        {name: regexp},
+        {grade: regexp}
+      ]
+    }
+  }
 }
 
 export default { get, load, add, list, }
