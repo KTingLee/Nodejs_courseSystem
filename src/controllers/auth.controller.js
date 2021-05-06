@@ -23,11 +23,11 @@ async function login(req, res, next) {
 
   // 利用傳統表單傳遞管理員帳密，可在後端重定向
   if (type === 'traditional') {
-    return res.redirect('/admin')
+    return res.redirect('/show/admin')
   }
   
   // 利用 Ajax，無法於後端重定向，故將重定向網址傳給前端(有暴露風險)
-  return res.status(httpStatus.OK).json({status: 'ok', results: '/admin'})
+  return res.status(httpStatus.OK).json({status: 'ok', results: '/show/admin'})
 }
 
 function logout(req, res, next) {
