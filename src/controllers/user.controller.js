@@ -97,10 +97,16 @@ async function set (req, res, next) {
   Object.assign(obj, req.body)
   try {
     const result = obj.save()
-    return res.status(httpStatus.OK).json({data: 'ok'})
+    return res.status(httpStatus.OK).json(obj)
   } catch (e) {
     next(e)
   }
 }
 
-export default { get, load, add, list, set, }
+async function del (req, res, next) {
+  const obj = req.obj
+  await Model.deleteOne({id: obj.id})
+  return res.status(httpStatus.OK).json({data: 'ok'})
+}
+
+export default { get, load, add, list, set, del, }

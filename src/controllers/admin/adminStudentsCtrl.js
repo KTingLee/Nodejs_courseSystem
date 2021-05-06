@@ -61,41 +61,6 @@ exports.uploadStudentsExcel = function(req, res){
     });
 }
 
-// 檢查學生是否存在
-exports.checkStudentExist = function(req, res){
-    // 獲得學生學號
-    var stu_id = req.params.sid;
-    
-    // 從資料庫中尋找該學生
-    Student.count({"stu_id":stu_id}, function(err, count){
-        if(err){
-            res.json({"results" : -1});   // -1 表示資料庫錯誤
-        }else{
-            res.json({"results" : count}); // 0 表示學號可使用
-        }
-    })
-}
-
-// 前端發送 delete 請求，並將欲刪除對象之資料放在 post 表單
-// 一樣以 formidable 解析 post 表單，再刪除資料庫中的資料
-exports.deleteStudents = function(req, res){
-    // 解析 post 資料
-    const form = formidable({});
-    form.parse(req, (err, fields, files) => {
-        var stu_id = fields.arr;
-        // 直接從資料庫刪除學生
-        Student.remove({"stu_id" : stu_id}, function(err, results){
-            if(err){
-                res.json({"results" : -1});
-                return;
-            }
-            res.json({"results" : results.deletedCount});
-
-        })
-    })
-}
-
-
 // 下載學生資料(注意有使用迭代器)
 // 先從資料庫撈學生資料，再轉成 Excel buffer，最後以 fs 生成檔案
 exports.downloadStudents = function(req, res){
