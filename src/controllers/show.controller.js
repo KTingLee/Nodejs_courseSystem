@@ -44,6 +44,15 @@ function showAddStudent(req, res, next) {
     page: 'students',
     level: 'admin'
   })
+  return
 }
 
-export default { showIndex, showLogin, showAdminDashboard, showAddStudent }
+function showImportStudent(req, res, next) {
+  res.render('admin/students/adminStudentsImport', {
+    page: 'students',
+    level: 'admin'
+  })
+  return
+}
+
+export default { showIndex, showLogin, showAdminDashboard, showAddStudent, showImportStudent }

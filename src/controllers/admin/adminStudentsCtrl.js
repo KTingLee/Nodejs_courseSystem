@@ -11,17 +11,6 @@ var url = require("url");
 var dateFormat = require('dateformat');
 
 
-// 超級使用者學生清單頁面(主頁面)
-
-
-// 超級使用者學生清單頁面(導入學生頁面)
-exports.showAdminStudentsImport = function(req, res){
-    res.render("admin/students/adminStudentsImport", {
-        "page"  : "students",
-        "level" : "admin"
-    })
-}
-
 // 超級使用者學生清單頁面(導入學生頁面 - 上傳學生資料)
 // 上傳檔案記得要設置 存放文件的資料夾
 exports.uploadStudentsExcel = function(req, res){

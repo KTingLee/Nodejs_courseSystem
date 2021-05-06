@@ -9,4 +9,7 @@ router.route('/')
 router.route('/addStudents')
   .get(ctrl.showAddStudent)
 
+router.route('/importStudents')
+  .get(ctrl.showImportStudent)
+
 export default router
