@@ -94,10 +94,13 @@ async function list (req, res, next) {
 
 async function set (req, res, next) {
   let obj = req.obj
-  console.log(req.body);
   Object.assign(obj, req.body)
-  const result = obj.save()
-  return res.status(httpStatus.OK).json(result)
+  try {
+    const result = obj.save()
+    return res.status(httpStatus.OK).json({data: 'ok'})
+  } catch (e) {
+    next(e)
+  }
 }
 
 export default { get, load, add, list, set, }
