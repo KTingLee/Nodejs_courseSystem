@@ -42,7 +42,7 @@ schema.statics = {
     
           const user = {
             id: student[0],
-            name: student[1],
+            username: student[1],
             grade: grade,
             password: _initPassword()
           }

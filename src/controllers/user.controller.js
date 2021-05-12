@@ -3,6 +3,7 @@ import debug from 'debug'
 import xlsx from 'node-xlsx'
 import httpStatus from 'http-status'
 // import APIError from '../middlewares/errors/APIError'
+import dateFormat from 'dateformat'
 import Model from '../models/user.model'
 
 async function add (req, res, next) {
@@ -154,4 +155,34 @@ async function importUsers(req, res, next) {
   }
 }
 
-export default { get, load, add, list, set, del, importUsers, }
+// 先從資料庫撈學生資料，再轉成 Excel buffer，最後以 fs 生成檔案
+async function downloadUsers(req, res, next) {
+    let excelRes = []
+    const GRADES = ['國一', '國二', '國三', '高一', '高二', '高三']
+
+    try {
+      for (const grade of GRADES) {
+        const users = await Model.find({grade: grade})
+        let sheetRes = [ ['學號', '姓名', '年級', '初始密碼'] ]
+        users.forEach(user => {
+          sheetRes.push([
+            user.id,
+            user.username,
+            user.grade,
+            user.password
+          ])
+        })
+  
+        excelRes.push({name: grade, data: sheetRes})
+      }
+      const buffer = xlsx.build(excelRes)
+      const fileName = dateFormat(new Date(), '學生資料yyyy年MM月dd日hhmmss') + '.xlsx'
+  
+      fs.writeFileSync(`./public/excel/${fileName}`, buffer)
+      return res.status(httpStatus.OK).redirect(`/excel/${fileName}`)
+    } catch(e) {
+      next(e)
+    }
+}
+
+export default { get, load, add, list, set, del, importUsers, downloadUsers, }

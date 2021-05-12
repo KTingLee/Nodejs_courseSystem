@@ -3,7 +3,6 @@ import session from "express-session"
 import mongoose from 'mongoose'
 
 import adminCtrl from "./controllers/admin/adminCtrl.js"
-import adminStudentsCtrl from "./controllers/admin/adminStudentsCtrl.js"
 import adminCoursesCtrl from "./controllers/admin/adminCoursesCtrl.js"
 import mainCtrl from "./controllers/mainCtrl.js"
 import showCtrl from './controllers/show.controller.js'
@@ -36,8 +35,6 @@ function initNormal() {
   app.get('/', showCtrl.showIndex)
   app.use('/show', showRoutes)
   app.use('/api', routes)
-  
-  app.get("/admin/students/download", adminStudentsCtrl.downloadStudents);         // 管理員頁面 - 學生主頁面(下載學生資料)
   
   app.get("/admin/courses", adminCoursesCtrl.showAdminCourses);       // 管理員頁面 - 課程管理頁面
   app.get("/admin/courses/import", adminCoursesCtrl.showAdminCoursesImport); // 管理員頁面 - 導入課程頁面

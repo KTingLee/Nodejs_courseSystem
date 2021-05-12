@@ -14,6 +14,9 @@ router.route('/')
 router.route('/import')
   .post(upload.single('file'), ctrl.importUsers)
 
+router.route('/download')
+  .get(ctrl.downloadUsers)
+
 router.route('/:id')
   .get(ctrl.get)
   .put(ctrl.set)
