@@ -11,7 +11,7 @@ const debug = require('debug')('app:initDB')
 async function insertUser () {
   if (await User.countDocuments() !== 0) return
   const data = [
-    {id: 'admin', username: 'admin', password: '1234', initpassword: false}
+    {id: 'admin', username: 'admin', password: '1234', role: 'admin', initpassword: false}
   ]
 
   debug(' => insert users')

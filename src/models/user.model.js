@@ -1,23 +1,20 @@
 import bcrypt from 'bcryptjs'
 import mongoose from 'mongoose'
+const debug = require('debug')('app:model:user')
 
-const userSchema = new mongoose.Schema({
+const schema = new mongoose.Schema({
     id: String,
     username: String,
-    grade: String,   // 年級，1, 2, 3 代表國一、二、三；4, 5, 6 代表高一、二、三
+    grade: { type: String, trim: true, enum: { values: ['', '國一', '國二', '國三', '高一', '高二', '高三'] } },   // 年級，1, 2, 3 代表國一、二、三；4, 5, 6 代表高一、二、三
     email: {type : String, default : ''},
     password: String,
     initpassword: {type : Boolean, default : true},  // 是否為最初直接提供給學生的初始密碼，默認為 true；當用戶登入後，要求更改密碼，將便為 false
-    courses: [String]  // 記錄所選課程
+    courses: [String],  // 記錄所選課程
+    role: { type: String, default : 'student', enum: { values: ['admin', 'student'] } }
 })
 
-userSchema.statics.comparePassword = function (inputPassword, DBPassword) {
-  const match = bcrypt.compareSync(inputPassword, DBPassword)
-  return match ? true : false
-}
-
 // 改寫 userSchema 的 save
-userSchema.pre('save', function (next) {
+schema.pre('save', function (next) {
   const user = this
 
   if (!user.isModified('password') || user.initpassword) return next()
@@ -32,37 +29,37 @@ userSchema.pre('save', function (next) {
   })
 })
 
-userSchema.statics.importStudents = async function (studentsArr, callback) {
-  const GRADES = {
-    0: '國一',
-    1: '國二',
-    2: '國三',
-    3: '高一',
-    4: '高二',
-    5: '高三'
-  }
-
-  await mongoose.connection.collection('users').drop()
-
-  try {
-    for (const students of studentsArr) {
-      const grade = students.name
-      for (const student of students.data) {
-        if (student[0] === '學號') continue
+schema.statics = {
+  async importStudents (studentsArr, callback) {
+    debug(`drop table: Users`)
+    await this.deleteMany({role: 'student'});
   
-        const user = {
-          id: student[0],
-          name: student[1],
-          grade: grade,
-          password: _initPassword()
+    try {
+      for (const students of studentsArr) {
+        const grade = students.name
+        for (const student of students.data) {
+          if (student[0] === '學號') continue
+    
+          const user = {
+            id: student[0],
+            name: student[1],
+            grade: grade,
+            password: _initPassword()
+          }
+    
+          await this.create(user)
         }
-  
-        await this.create(user)
       }
+    } catch (e) {
+      throw e
     }
-  } catch (e) {
-    throw e
-  }
+  },
+
+  comparePassword (inputPassword, DBPassword) {
+    const match = bcrypt.compareSync(inputPassword, DBPassword)
+    return match ? true : false
+  },
+  
 }
 
 function _initPassword() {
@@ -76,6 +73,4 @@ function _initPassword() {
     return pwd
 }
 
-const Student = mongoose.model('User', userSchema)
-
-module.exports = Student
+export default mongoose.model('User', schema)

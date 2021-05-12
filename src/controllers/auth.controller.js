@@ -12,7 +12,7 @@ async function login(req, res, next) {
     return res.status(httpStatus.NOT_FOUND).json({message: 'user not found'})
   }
 
-  const valid = Model.comparePassword(password, user.password)
+  const valid = (user.initpassword) ? password === user.password : Model.comparePassword(password, user.password)
   if (!valid) {
     return res.status(httpStatus.UNAUTHORIZED).json({message: 'id or password is not correct'})
   }
