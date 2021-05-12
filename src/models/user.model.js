@@ -20,7 +20,7 @@ userSchema.statics.comparePassword = function (inputPassword, DBPassword) {
 userSchema.pre('save', function (next) {
   const user = this
 
-  if (!user.isModified('password')) return next()
+  if (!user.isModified('password') || user.initpassword) return next()
 
   bcrypt.genSalt(10, (err, salt) => {
     if (err) return next(err)
@@ -32,16 +32,48 @@ userSchema.pre('save', function (next) {
   })
 })
 
-// 製作初始密碼
-userSchema.statics.initPassword = function(){
+userSchema.statics.importStudents = async function (studentsArr, callback) {
+  const GRADES = {
+    0: '國一',
+    1: '國二',
+    2: '國三',
+    3: '高一',
+    4: '高二',
+    5: '高三'
+  }
+
+  await mongoose.connection.collection('users').drop()
+
+  try {
+    for (const students of studentsArr) {
+      const grade = students.name
+      for (const student of students.data) {
+        if (student[0] === '學號') continue
+  
+        const user = {
+          id: student[0],
+          name: student[1],
+          grade: grade,
+          password: _initPassword()
+        }
+  
+        await this.create(user)
+      }
+    }
+  } catch (e) {
+    throw e
+  }
+}
+
+function _initPassword() {
     // 等等加密用的字元
-    const str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789&%$#@!"
-    const pwd = "";
+    const str = `ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789&%$#@!`
+    let pwd = ''
     // 製作六位數密碼
     for(let m = 0; m < 6; m++){
         pwd += str.charAt(parseInt(str.length * Math.random()))
     }
-    return pwd;
+    return pwd
 }
 
 const Student = mongoose.model('User', userSchema)

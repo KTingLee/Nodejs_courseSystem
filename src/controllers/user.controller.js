@@ -1,4 +1,6 @@
+import fs from 'fs'
 import debug from 'debug'
+import xlsx from 'node-xlsx'
 import httpStatus from 'http-status'
 // import APIError from '../middlewares/errors/APIError'
 import Model from '../models/user.model'
@@ -109,4 +111,47 @@ async function del (req, res, next) {
   return res.status(httpStatus.OK).json({data: 'ok'})
 }
 
-export default { get, load, add, list, set, del, }
+async function importUsers(req, res, next) {
+  if (!req.file) {
+    return res.status(httpStatus.BAD_REQUEST).json({message: `file is required`})
+  }
+
+  if (!req.file.mimetype.includes('spreadsheetml.sheet')) {
+    // fs 是依照 terminal 執行時的位置
+    fs.unlinkSync(req.file.path)
+    return res.status(httpStatus.BAD_REQUEST).json({message: `Format error! Only 'xlsx' accept`})
+  }
+
+  try {
+    const users = xlsx.parse(req.file.path)
+    const errMsg = _checkFormat(users)
+    if (errMsg.length !== 0) {
+      return res.status(httpStatus.BAD_REQUEST).json({message: errMsg})
+    }
+
+    await Model.importStudents(users)
+    return res.status(httpStatus.OK).json({data: 'ok'})
+  } catch (e) {
+    next(e)
+  }
+
+  function _checkFormat(data) {
+    let errMsg = []
+
+    // 檢查是否含有六個年級的 sheet
+    if (data.length !== 6) {
+      errMsg.push(`sheet amount error`)
+    }
+
+    // 檢查資料格式是否正確 學號、姓名、性別
+    for (let i = 0; i < 6; i++) {
+      if (data[i].data[0][0] !== '學號' || data[i].data[0][1] !== '姓名') {
+        errMsg.push(`Format error in sheet ${i + 1}. The first row must be '學號' and '姓名'`)
+      }
+    }
+
+    return errMsg
+  }
+}
+
+export default { get, load, add, list, set, del, importUsers, }

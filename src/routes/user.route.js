@@ -1,13 +1,18 @@
+import multer from 'multer'
 import express from 'express'
 import {validate} from 'express-validation'
 import paramValidation from '../validations/user.validation'
 import ctrl from '../controllers/user.controller'
 
 const router = express.Router()
+const upload = multer({ dest: `${__dirname}/../storage` })
 
 router.route('/')
   .get(ctrl.list)
   .post(ctrl.add)
+
+router.route('/import')
+  .post(upload.single('file'), ctrl.importUsers)
 
 router.route('/:id')
   .get(ctrl.get)

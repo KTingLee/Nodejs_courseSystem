@@ -4,10 +4,10 @@
 
 
 <!-- 上傳方式，採用同步提交，利用 form 標籤，上傳檔案時，除了基本的 action、method，別忘了再加上 enctype -->
-<form action="/admin/students/import" method="post" enctype="multipart/form-data" id="fileForm">
+<form action="/api/users/import" method="post" enctype="multipart/form-data" id="fileForm">
 <p>
     <!-- 後端接收到時，會得到一個 JSON 物件，其中屬性 studentExcel 便含有檔案資訊 -->
-    <input type="file" name="studentExcel"/>
+    <input type="file" name="file"/>
 </p>
 <p>
     <!-- 按鈕採用 submit，點擊後便會觸發 post 請求 -->
