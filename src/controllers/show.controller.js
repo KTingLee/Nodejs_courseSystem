@@ -6,14 +6,14 @@ function showIndex(req, res, next) {
   }
 
   // 從 session 中獲得使用者帳號、名稱以及是否為初始密碼
-  const userID = req.session.userID;
-  const userName = req.session.userName;
-  const initpassword = req.session.initpassword;
-  const grade = req.session.grade;
+  const userID = req.session.userId
+  const userName = req.session.username
+  const initpassword = req.session.initpassword
+  const grade = req.session.grade
 
   // 若為初始密碼，則仍無法讀取首頁，必須強制跳轉到更改密碼頁面
   if (initpassword) {
-    res.redirect('/changePWD');
+    res.redirect('/changePWD')
   } else {
     res.render('index', {
       nowPage: 'index',
