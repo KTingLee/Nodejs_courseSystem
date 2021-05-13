@@ -8,7 +8,7 @@ const router = express.Router()
 const upload = multer({ dest: `${__dirname}/../storage` })
 
 router.route('/')
-  // .get(ctrl.list)
+  .get(ctrl.list)
   .post(ctrl.add)
 
 // router.route('/import')
