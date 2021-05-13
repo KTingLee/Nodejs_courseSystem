@@ -35,7 +35,6 @@ function initNormal() {
   app.use('/show', showRoutes)
   app.use('/api', routes)
   
-  app.get("/changePWD", mainCtrl.showChangePWD);                  // 顯示密碼更改頁面
   app.post("/changePWD", mainCtrl.doChangePWD);                    // 執行修改密碼
   app.get("/forget", mainCtrl.forgetPWD);                      // 顯示忘記密碼頁面
   app.post("/forget", mainCtrl.doForgetPWD);                    // 執行忘記密碼找回工作

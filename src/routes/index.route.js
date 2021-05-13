@@ -15,7 +15,7 @@ router.use('/courses', checkAuth, courseRoutes)
 
 
 function checkAuth (req, res, next) {
-  if (!req.session || !req.session.authenticated) {
+  if (!req.session || !req.session.authenticated || req.session.role !== 'admin') {
     return res.status(httpStatus.UNAUTHORIZED).json({message: `Authentication error`})
   } else {
     next()

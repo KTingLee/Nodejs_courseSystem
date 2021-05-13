@@ -1,4 +1,5 @@
 import httpStatus from 'http-status'
+import UserDB from '../models/user.model'
 
 function showIndex(req, res, next) {
   if (!req.session || !req.session.authenticated) {
@@ -13,7 +14,7 @@ function showIndex(req, res, next) {
 
   // 若為初始密碼，則仍無法讀取首頁，必須強制跳轉到更改密碼頁面
   if (initpassword) {
-    res.redirect('/changePWD')
+    res.redirect('/show/user/changePWD')
   } else {
     res.render('index', {
       nowPage: 'index',
@@ -79,6 +80,25 @@ function showAddCourses(req, res, next) {
   return
 }
 
+async function showUserChangePWD(req, res, next) {
+  const userId = req.session.userId
+  const username = req.session.username
+  const initpassword = req.session.initpassword
+  const grade = req.session.grade
+
+  const user = await UserDB.findOne({ id: userId })
+  if (!user) return res.redirect('/show/login')
+
+  return res.render('changePWD', {
+    nowPage: 'changePWD',
+    userID: userId,
+    userName: username,
+    initpassword: initpassword,
+    userGrade: grade,
+    email: user.email
+  })
+}
+
 export default {
   showIndex,
   showLogin, 
@@ -88,4 +108,6 @@ export default {
   showCourseDashboard, 
   showImportCourses, 
   showAddCourses, 
+  showUserChangePWD,
+
 }

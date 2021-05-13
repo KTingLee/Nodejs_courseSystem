@@ -11,40 +11,6 @@ var Student = require("../models/Student.js");
 var Course = require("../models/course.model");
 var crypto = require("crypto");
 
-// 顯示密碼更改頁面
-exports.showChangePWD = function(req, res){
-    var userID = req.session.userID;
-    var userName = req.session.userName;
-    var initpassword = req.session.initpassword;
-    var grade = req.session.grade;
-
-    // 抓取該學生的電子信箱
-    Student.find({"stu_id" : userID}, function(err, results){
-        if(err){
-            res.json({"results" : -1});  // -1 表示伺服器錯誤
-            return;
-        }
-
-        if(results.length == 0){
-            res.redirect("/login");
-            return;
-        }
-        // 學生存在
-        var thisStudent = results[0];
-
-        // 渲染頁面
-        res.render("changePWD",{
-            "nowPage"  : "changePWD",
-            "userID"   : userID,
-            "userName" : userName,
-            "initpassword" : initpassword,
-            "userGrade" : grade,
-            "email"     : thisStudent.email
-        })
-    })
-}
-
-
 // 修改密碼的話，前端會發送新的密碼表單，後端也驗證完兩者一致後，才寫入資料庫(記得要加密寫入！)
 // session 本身就帶著學號了，所以前端不需要再傳遞學號過來
 exports.doChangePWD = function(req, res){
