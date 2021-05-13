@@ -92,6 +92,8 @@ async function list(req, res, next) {
 }
 
 async function set (req, res, next) {
+  delete req.body.oper
+  req.body.allow = req.body.allow.split(',')  // 前端用 jqGrid，導致傳來的內容有點難處理，所以放到後端來弄
   let obj = req.obj
   Object.assign(obj, req.body)
   try {

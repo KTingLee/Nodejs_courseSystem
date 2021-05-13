@@ -38,11 +38,6 @@ function initNormal() {
   app.use('/api', routes)
   
   app.post("/admin/courses/import", adminCoursesCtrl.uploadCoursesJSON);      // 管理員頁面 - 導入課程頁面(上傳課程資料)
-  app.post("/admin/courses/add", adminCoursesCtrl.doAdminCoursesAdd);      // 管理員頁面 - 新增課程頁面(增加一門課程至資料庫)
-  app.delete("/admin/courses/delete", adminCoursesCtrl.deleteCourses);          // 管理員頁面 - 課程主頁面(刪除課程)
-  
-  app.post("/admin/courses/", adminCoursesCtrl.updateCourse);           // Ajax 接口(後端獲取資料) : 課程清單 - 修改課程資料
-  app.propfind("/coursesData/:cid", adminCoursesCtrl.checkCourseExist);       // Ajax 接口(後端獲取資料) : 課程清單 - 檢查該課程編號是否存在
   
   app.post("/login", mainCtrl.doLogin);                        // 驗證登入內容
   app.get("/changePWD", mainCtrl.showChangePWD);                  // 顯示密碼更改頁面
