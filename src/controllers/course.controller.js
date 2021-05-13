@@ -47,7 +47,6 @@ async function list(req, res, next) {
   const page = req.query.page // 目前讀取的是第幾頁
   const rows = req.query.rows // 每頁要顯示幾筆資料
   const sidx = req.query.sidx // 以哪個 index 排序
-  const sord = req.query.sord // 排序方式
 
   // 快速查詢字元放在 keyword 欄位中
   const findFilter = _makeRegex(req.query.keyword)
@@ -81,10 +80,10 @@ async function list(req, res, next) {
     const regexp = new RegExp(keyword, 'g')
     return {
       $or: [
-        {cid: regexp},
-        {Name: regexp},
+        {id: regexp},
+        {name: regexp},
         {allow: regexp},
-        {courseDay: regexp},
+        {day: regexp},
         {teacher: regexp},
         {intro: regexp}
       ]
