@@ -3,7 +3,6 @@ import session from "express-session"
 import mongoose from 'mongoose'
 
 import adminCtrl from "./controllers/admin/adminCtrl.js"
-import adminCoursesCtrl from "./controllers/admin/adminCoursesCtrl.js"
 import mainCtrl from "./controllers/mainCtrl.js"
 
 import showCtrl from './controllers/show.controller.js'
@@ -36,8 +35,6 @@ function initNormal() {
   app.get('/', showCtrl.showIndex)
   app.use('/show', showRoutes)
   app.use('/api', routes)
-  
-  app.post("/admin/courses/import", adminCoursesCtrl.uploadCoursesJSON);      // 管理員頁面 - 導入課程頁面(上傳課程資料)
   
   app.post("/login", mainCtrl.doLogin);                        // 驗證登入內容
   app.get("/changePWD", mainCtrl.showChangePWD);                  // 顯示密碼更改頁面

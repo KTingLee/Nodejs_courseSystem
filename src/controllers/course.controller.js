@@ -110,77 +110,25 @@ async function del (req, res, next) {
   return res.status(httpStatus.OK).json({data: 'ok'})
 }
 
-async function importUsers(req, res, next) {
+async function importCourses(req, res, next) {
   if (!req.file) {
     return res.status(httpStatus.BAD_REQUEST).json({message: `file is required`})
   }
 
-  if (!req.file.mimetype.includes('spreadsheetml.sheet')) {
+  if (!req.file.mimetype.includes('json')) {
     // fs 是依照 terminal 執行時的位置
     fs.unlinkSync(req.file.path)
-    return res.status(httpStatus.BAD_REQUEST).json({message: `Format error! Only 'xlsx' accept`})
+    return res.status(httpStatus.BAD_REQUEST).json({message: `Format error! Only 'json' accept`})
   }
-
+  
   try {
-    const users = xlsx.parse(req.file.path)
-    const errMsg = _checkFormat(users)
-    if (errMsg.length !== 0) {
-      return res.status(httpStatus.BAD_REQUEST).json({message: errMsg})
-    }
+    const courses = JSON.parse(fs.readFileSync(req.file.path))
 
-    await Model.importStudents(users)
+    await Model.importCourses(courses.course)
     return res.status(httpStatus.OK).json({data: 'ok'})
   } catch (e) {
     next(e)
   }
-
-  function _checkFormat(data) {
-    let errMsg = []
-
-    // 檢查是否含有六個年級的 sheet
-    if (data.length !== 6) {
-      errMsg.push(`sheet amount error`)
-    }
-
-    // 檢查資料格式是否正確 學號、姓名、性別
-    for (let i = 0; i < 6; i++) {
-      if (data[i].data[0][0] !== '學號' || data[i].data[0][1] !== '姓名') {
-        errMsg.push(`Format error in sheet ${i + 1}. The first row must be '學號' and '姓名'`)
-      }
-    }
-
-    return errMsg
-  }
 }
 
-// 先從資料庫撈學生資料，再轉成 Excel buffer，最後以 fs 生成檔案
-async function downloadUsers(req, res, next) {
-    let excelRes = []
-    const GRADES = ['國一', '國二', '國三', '高一', '高二', '高三']
-
-    try {
-      for (const grade of GRADES) {
-        const users = await Model.find({grade: grade})
-        let sheetRes = [ ['學號', '姓名', '年級', '初始密碼'] ]
-        users.forEach(user => {
-          sheetRes.push([
-            user.id,
-            user.username,
-            user.grade,
-            user.password
-          ])
-        })
-  
-        excelRes.push({name: grade, data: sheetRes})
-      }
-      const buffer = xlsx.build(excelRes)
-      const fileName = dateFormat(new Date(), '學生資料yyyy年MM月dd日hhmmss') + '.xlsx'
-  
-      fs.writeFileSync(`./public/excel/${fileName}`, buffer)
-      return res.status(httpStatus.OK).redirect(`/excel/${fileName}`)
-    } catch(e) {
-      next(e)
-    }
-}
-
-export default { get, load, add, list, set, del, importUsers, downloadUsers, }
+export default { get, load, add, list, set, del, importCourses, }

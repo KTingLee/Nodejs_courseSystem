@@ -11,11 +11,8 @@ router.route('/')
   .get(ctrl.list)
   .post(ctrl.add)
 
-// router.route('/import')
-//   .post(upload.single('file'), ctrl.importUsers)
-
-// router.route('/download')
-//   .get(ctrl.downloadUsers)
+router.route('/import')
+  .post(upload.single('file'), ctrl.importCourses)
 
 router.route('/:id')
   .get(ctrl.get)

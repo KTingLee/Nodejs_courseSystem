@@ -12,4 +12,17 @@ const schema = new mongoose.Schema({
   myStudents: [String]
 })
 
+schema.statics = {
+  async importCourses (courses, callback) {
+    debug(`drop table: Courses`)
+    await mongoose.connection.collection('courses').drop()
+  
+    try {
+      await this.insertMany(courses)
+    } catch (e) {
+      throw e
+    }
+  },
+}
+
 export default mongoose.model('Course', schema)
