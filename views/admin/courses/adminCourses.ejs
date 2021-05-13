@@ -72,32 +72,29 @@
 
 
     /* 監聽刪除按鈕 */
-    $("#delBtn").click(function(){
-        // 獲得所選的學生資料，這邊如果學號的欄位有提供 key:true，就不用再自己抓學號了
-        var arr = $("#coursesTable").jqGrid('getGridParam', 'selarrrow');
-        var cid_arr = [];
+    $('#delBtn').click(function(){
+        // 獲得所選的課程資料，這邊如果課程編號的欄位有提供 key:true，就不用再自己抓編號了
+        const arr = $('#coursesTable').jqGrid('getGridParam', 'selarrrow')
+        let ids = []
         for(let i = 0; i < arr.length; i++){
-            cid_arr.push($('#coursesTable').getCell(arr[i], 1));
+            ids.push($('#coursesTable').getCell(arr[i], 1))
         }
 
         // 刪除前先詢問，記得若回應是取消，則要回傳 false！
-        if(!confirm("確定要刪除課程嗎？")){
-            return false;
-        }
+        if(!confirm('確定要刪除課程嗎？')) return false
 
         // 向後端發送 Ajax 請求(這邊傳遞 delete 請求，與我們要執行的動作較相呼應)
         // 一樣是以 post 請求發送資料，因為可以多選，所以是 json 中的值是矩陣型態
-        $.ajax({
-            "url"  : "/admin/courses/delete",
-            "type" : "delete",
-            "dataType" : "json",
-            "data" : {"arr" : cid_arr},
-            "traditional" : true,  // 當 data 型態為 json，而值為"矩陣"(如本篇的 cid_arr)，該選項能讓 key 保持正常，不然會把 key 改寫為 'arr[]'
-            "success" : function(mes){
-                alert("成功刪除了" + mes.results + "筆資料。")
-                // 重新整理表格
-                $("#coursesTable").trigger("reloadGrid")
-            }
+        ids.forEach(id => {
+            $.ajax({
+                url: `/api/courses/${id}`,
+                type: 'delete',
+                success: function(mes){
+                    alert(`成功刪除了 ${mes.results} 筆資料。`)
+                    // 重新整理表格
+                    $('#coursesTable').trigger('reloadGrid')
+                }
+            })
         })
     })
 
