@@ -8,7 +8,7 @@ var fs = require("fs");
 var xlsx = require("node-xlsx");
 var url = require("url");
 var dateFormat = require('dateformat');
-var Course = require("../../models/Course");
+var Course = require("../../models/course.model")
 var mongoose = require("mongoose");
 
 // 超級使用者課程清單頁面(導入課程頁面 - 上傳課程資料)

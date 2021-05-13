@@ -128,6 +128,7 @@
     // 檢驗課程編號，檢查是否是否重複，若沒重複則 invalid 中的 cid 為 false
     // 若驗證沒過還會增加提示
     $('#cid').blur(function(){
+        const self = $(this)
         const cid = $(this).val()
 
         if(!cid){
@@ -150,11 +151,12 @@
                 invalid.cid = true
                 $(this).after(alertTip('warning', '課程已存在。'))
             },
-            error: () => {
-                invalid.cid = false
-                $(this).after(alertTip('success', '課程可使用。'))  // 直接使用 this
-            }
-            
+            statusCode: {
+                404: function() {
+                    invalid.cid = false
+                    self.after(alertTip('success', '課程可使用。'))  // 直接使用 this
+                }
+            },
         })
     })
 
@@ -216,8 +218,8 @@
 
     // 驗證上課日期是否有選擇，採用 change 事件做檢查(只要值有改變就觸發 change 事件)
     $('#courseDay').change(function(){
-        var courseDay = $(this).val()
-        if(!courseDay){
+        const courseDay = $(this).val()
+        if(courseDay){
             invalid.courseDay = false
         }else{
             // after 表示某元素後方建立新元素，以靜態方法產生
@@ -257,7 +259,7 @@
     $('[checkValid]').blur(function(){
         console.log(invalid)
         let allValid = true
-        for(let k of invalid){
+        for(let k in invalid){
             // 當 invalid 有一項為 true，表示有輸入框不合格，並跳出迴圈
             if(invalid[k]){
                 allValid = false

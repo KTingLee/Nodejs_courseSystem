@@ -8,7 +8,7 @@ var xlsx = require("node-xlsx");
 var url = require("url");
 var mongoose = require("mongoose");
 var Student = require("../models/Student.js");
-var Course = require("../models/Course.js");
+var Course = require("../models/course.model");
 var crypto = require("crypto");
 
 // 顯示 404 頁面

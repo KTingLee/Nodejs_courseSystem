@@ -5,6 +5,7 @@ import mongoose from 'mongoose'
 import adminCtrl from "./controllers/admin/adminCtrl.js"
 import adminCoursesCtrl from "./controllers/admin/adminCoursesCtrl.js"
 import mainCtrl from "./controllers/mainCtrl.js"
+
 import showCtrl from './controllers/show.controller.js'
 import showRoutes from './routes/show.route.js'
 import routes from './routes/index.route.js'
