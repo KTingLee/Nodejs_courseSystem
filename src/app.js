@@ -36,10 +36,7 @@ function initNormal() {
   app.use('/show', showRoutes)
   app.use('/api', routes)
   
-  app.get("/admin/courses", adminCoursesCtrl.showAdminCourses);       // 管理員頁面 - 課程管理頁面
-  app.get("/admin/courses/import", adminCoursesCtrl.showAdminCoursesImport); // 管理員頁面 - 導入課程頁面
   app.post("/admin/courses/import", adminCoursesCtrl.uploadCoursesJSON);      // 管理員頁面 - 導入課程頁面(上傳課程資料)
-  app.get("/admin/courses/add", adminCoursesCtrl.showAdminCoursesAdd);    // 管理員頁面 - 新增課程頁面
   app.post("/admin/courses/add", adminCoursesCtrl.doAdminCoursesAdd);      // 管理員頁面 - 新增課程頁面(增加一門課程至資料庫)
   app.delete("/admin/courses/delete", adminCoursesCtrl.deleteCourses);          // 管理員頁面 - 課程主頁面(刪除課程)
   

@@ -11,23 +11,6 @@ var dateFormat = require('dateformat');
 var Course = require("../../models/Course");
 var mongoose = require("mongoose");
 
-
-// 超級使用者課程清單頁面(主頁面)
-exports.showAdminCourses = function(req, res){
-    res.render('admin/courses/adminCourses',{
-        "page"  : "courses",
-        "level" : "admin"
-    })
-}
-
-// 超級使用者課程清單頁面(導入課程頁面)
-exports.showAdminCoursesImport = function(req, res){
-    res.render("admin/courses/adminCoursesImport", {
-        "page"  : "courses",
-        "level" : "admin"
-    })
-}
-
 // 超級使用者課程清單頁面(導入課程頁面 - 上傳課程資料)
 // 上傳檔案記得要設置 存放文件的資料夾
 exports.uploadCoursesJSON = function(req, res){
@@ -167,14 +150,6 @@ exports.updateCourse = function(req, res){
     })
 }
 
-
-
-exports.showAdminCoursesAdd = function(req, res){
-    res.render("admin/courses/adminCoursesAdd", {
-        "page"  : "courses",
-        "level" : "admin"
-    })
-}
 
 
 // 檢查課程是否存在

@@ -55,4 +55,37 @@ function showImportStudent(req, res, next) {
   return
 }
 
-export default { showIndex, showLogin, showAdminDashboard, showAddStudent, showImportStudent }
+function showCourseDashboard(req, res, next) {
+  res.render('admin/courses/adminCourses', {
+    page: 'courses',
+    level: 'admi'
+  })
+  return
+}
+
+function showImportCourses(req, res, next) {
+  res.render('admin/courses/adminCoursesImport', {
+    page: 'courses',
+    level: 'admin'
+  })
+  return
+}
+
+function showAddCourses(req, res, next) {
+  res.render('admin/courses/adminCoursesAdd', {
+    page: 'courses',
+    level: 'admin'
+  })
+  return
+}
+
+export default {
+  showIndex,
+  showLogin, 
+  showAdminDashboard, 
+  showAddStudent, 
+  showImportStudent, 
+  showCourseDashboard, 
+  showImportCourses, 
+  showAddCourses, 
+}
