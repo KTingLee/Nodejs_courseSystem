@@ -11,11 +11,6 @@ var Student = require("../models/Student.js");
 var Course = require("../models/course.model");
 var crypto = require("crypto");
 
-// 顯示 404 頁面
-exports.show404 = function(req, res){
-    res.send("404 你的網頁不存在")
-}
-
 // 登入內容會以 post 方式提交，所以用 formidable 處理
 // 先驗證帳號是否存在，若有，則檢查密碼是否為初始密碼(initPassword 為 true 表示為初始密碼)
 // 初始密碼直接比對即可

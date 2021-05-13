@@ -2,7 +2,6 @@ import express from 'express'
 import session from "express-session"
 import mongoose from 'mongoose'
 
-import adminCtrl from "./controllers/admin/adminCtrl.js"
 import mainCtrl from "./controllers/mainCtrl.js"
 
 import showCtrl from './controllers/show.controller.js'
@@ -47,13 +46,11 @@ function initNormal() {
   app.get("/myCourses", mainCtrl.showMyCourses);                  // 所選課程頁面
   app.propfind("/myCourses", mainCtrl.getMyCourses);                   // 所選課程資訊
   
-  app.get("/admin/reports", adminCtrl.showAdminReports);  // 管理員頁面 - 課程報表頁面
-  
   // 提供靜態資料夾，這樣 public 資料夾就等同於根目路(/)
   app.use(express.static("public"))
   
   // 設置 404 頁面，如果請求的路由沒有在路由清單也不在靜態資料夾，就會執行這段
-  app.use(mainCtrl.show404)
+  app.use((req, res) => res.status(404).json("404 你的網頁不存在"))
   
   app.listen(PORT, () => { console.log(`選課系統啟動囉！前往 ${PORT} port 查看...`) })
 }
