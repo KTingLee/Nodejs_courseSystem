@@ -20,6 +20,13 @@ async function login(req, res, next) {
   req.session.authenticated = true
   req.session.userId = user.id
   req.session.username = user.username
+  req.session.role = user.role
+
+  if (user.role === 'student') {
+    req.session.grade = user.grade
+    req.session.initpassword = user.initpassword
+    return res.status(httpStatus.OK).json({status: 'ok', results: '/'})
+  }
 
   // 利用傳統表單傳遞管理員帳密，可在後端重定向
   if (type === 'traditional') {

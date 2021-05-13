@@ -75,7 +75,7 @@
                 帳號：
             </p>
             <p>
-                <input type="text" class="form-control" id="userID" checkValid>
+                <input type="text" class="form-control" id="userId" checkValid>
                 <span class="alert myalert2 alert-danger">帳號不能為空。</span>
             </p>
             <p>
@@ -86,7 +86,7 @@
             </p>
             <input type="button" class="btn btn-success" value="登入" disabled="disabled" id="loginBtn">
             <a href="/forget" class="btn btn-warning">忘記密碼</a>
-            <input type="button" class="btn btn-info" value="管理員" id="authBtn">
+            <input type="button" class="btn btn-info" style="display:none;" value="管理員" id="authBtn">
         </div>
 
     </div>
@@ -115,57 +115,60 @@
 <!-- 以 Ajax 提交帳號密碼 -->
 <script type='text/javascript'>
     // 當帳號框輸入時(focus 事件)，警示框要隱藏
-    $("#userID").focus(function(){
-        $(this).next().hide();
+    $('#userId').focus(function(){
+        $(this).next().hide()
     })
 
     // 當帳號框 blur 時，檢查是否有輸入帳號，若沒有就跳警示
-    $("#userID").blur(function(){
-        if($(this).val() == ''){
-            $(this).next().show().html('帳號不能為空。');
-        }
+    $('#userId').blur(function(){
+        if(!$(this).val()) $(this).next().show().html('帳號不能為空。')
     })
 
     // 檢查含有 checkValid 屬性的元素是否都有值(只要任一輸入框 blur 就檢查)
-    $("[checkValid]").blur(function(){
-        if($("#userID").val() != '' && $("#userPassword").val() != ''){
-            $("#loginBtn").attr("disabled", false).css("cursor", "pointer");
+    $('[checkValid]').blur(function(){
+        const userId = $('#userId').val()
+        const password = $('#userPassword').val()
+        if(userId && password){
+            $('#loginBtn').attr('disabled', false).css('cursor', 'pointer')
         }else{
-            $("#loginBtn").attr("disabled", true).css("cursor", "not-allowed");
+            $('#loginBtn').attr('disabled', true).css('cursor', 'not-allowed')
         }
     })
 
     // 登入按鈕點擊時，發送表單
-    $("#loginBtn").click(function(){
-        var userID = $("#userID").val();
-        var userPassword = $("#userPassword").val();
+    $('#loginBtn').click(function(){
+        const userId = $('#userId').val()
+        const password = $('#userPassword').val()
 
-        $.post('/login', {
-            "userID" : userID,
-            "userPassword" : userPassword
-        }, function(mes){
-            if(mes.results == 1){
-                alert("登入成功，即將跳轉頁面");
-                // 進行跳轉
-                window.location = "/";
-            }else if(mes.results == -1){
-                alert("伺服器錯誤")
-            }else{
-                $("#userID").next().show().html("帳號或密碼錯誤！")
+        $.ajax({
+            type: 'POST',
+            url: `/api/auth/login`,
+            dataType: 'json',
+            data: {
+                userId: userId,
+                password: password
+            },
+            success: (msg) => {
+                alert('登入成功，即將跳轉頁面')
+                window.location = msg.results
+                return
+            },
+            error: () => {
+                $('#userId').next().show().html('帳號或密碼錯誤！')
             }
         })
     })
 
     // 監聽管理員按鈕，按下時跳出輸入框
-    $("#authBtn").click(function(){
-        $("#authArea").css({"display" : "block"});
+    $('#authBtn').click(function(){
+        $('#authArea').css({'display' : 'block'});
     })
 
     // 監聽管理員面板中的取消按鈕
-    $("#cancel").click(function(){
-        $("#authArea").css({"display" : "none"});
-        $("#authID").val("");
-        $("#authPWD").val("");
+    $('#cancel').click(function(){
+        $('#authArea').css({'display' : 'none'});
+        $('#authID').val('');
+        $('#authPWD').val('');
     })
 
     // 監聽管理員面板中的登入按鈕
@@ -183,7 +186,6 @@
             },
             dataType: 'json',
             success: function (msg) {
-                console.log(window.location);
                 window.location = msg.results
                 return
             },
