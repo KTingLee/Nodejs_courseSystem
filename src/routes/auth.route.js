@@ -11,6 +11,7 @@ router.route('/login')
 router.route('/logout')
   .get(ctrl.logout)
 
-// router.route('/passwd').post(validate(paramValidation.passwd), ctrl.passwd)
+router.route('/changePWD')
+  .post(ctrl.changePWD)
 
 export default router

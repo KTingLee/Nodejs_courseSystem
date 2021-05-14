@@ -45,4 +45,29 @@ function logout(req, res, next) {
   return res.redirect('/show/login')
 }
 
-module.exports = { login, logout }
+async function changePWD(req, res, next) {
+  const userId = req.session.userId
+  const email = req.body.email
+  const pwd1  = req.body.pwd1
+  const pwd2  = req.body.pwd2
+
+  if (pwd1 !== pwd2) return res.status(httpStatus.BAD_REQUEST).json({message: 'passwaord is not identical'})
+  
+  try {
+    let user = await Model.findOne({id: userId})
+    user.email = email ? email : ''
+    if (pwd1) {
+      user.initpassword = false
+      user.password = pwd1 ? pwd1 : user.password
+      user.markModified('password')
+      req.session.initpassword = user.initpassword
+    }
+    
+    await user.save()
+    return res.status(httpStatus.OK).json({data: 'ok'})
+  } catch(e) {
+    next(e)
+  }
+}
+
+module.exports = { login, logout, changePWD, }

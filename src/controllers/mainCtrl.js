@@ -11,62 +11,6 @@ var Student = require("../models/Student.js");
 var Course = require("../models/course.model");
 var crypto = require("crypto");
 
-// 修改密碼的話，前端會發送新的密碼表單，後端也驗證完兩者一致後，才寫入資料庫(記得要加密寫入！)
-// session 本身就帶著學號了，所以前端不需要再傳遞學號過來
-exports.doChangePWD = function(req, res){
-    const form  = formidable({ multiples: true , keepExtensions: true});
-    form.parse(req, (err, fields, files) => {
-        if(err){
-            res.json({"results" : -1});  // -1 表示伺服器錯誤
-            return;
-        }
-        var userID = req.session.userID;
-        var pwd1  = fields.pwd1;
-        var pwd2  = fields.pwd2;
-        var email = fields.email;
-
-        // 檢查電子信箱是否合格
-        if( /.*@gmail\.com/.test(email) != true){
-            res.json({"results" : -1});  // -4 表示電子信箱不合格
-            return;
-        }
-
-        // 檢查密碼是否一致
-        if(pwd1 === pwd2){
-            Student.find({"stu_id" : userID}, function(err, data){
-                if(err){
-                    res.json({"results" : -1});  // -1 表示伺服器錯誤
-                    return;
-                }
-
-                if(data.length == 0){
-                    res.json({"results" : -2});  // -2 表示資料庫中沒有此帳號
-                    return;
-                }
-
-                var thisStudent = data[0];
-                // 對使用者輸入的密碼加密
-                thisStudent.password = crypto.createHash("sha256").update(pwd1).digest("hex");
-                // 將 initpassword 設置為 false，表示該使用者已經修改過密碼
-                thisStudent.initpassword = false;
-                // 將電子信箱寫入學生資料
-                thisStudent.email = email;
-                // 寫入資料庫
-                thisStudent.save();
-
-                // 改一下 session.initpassword
-                req.session.initpassword = thisStudent.initpassword;
-
-                res.json({"results" : 1});  // 1 表示修改成功
-                return;
-            })
-        }else{
-            res.json({"results" : -3});  // -3 表示密碼不一致
-            return;
-        }
-    })
-}
-
 // 找回密碼，前端向後端發送 post 表單
 exports.doForgetPWD = function(req, res){
     const form  = formidable({ multiples: true , keepExtensions: true});
