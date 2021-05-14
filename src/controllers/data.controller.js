@@ -90,4 +90,21 @@ async function dropCourse(req, res, next) {
   }
 }
 
-export default { listCourseStatus, chooseCourse, dropCourse, }
+async function getUserCourses(req, res, next) {
+  const userId = req.session.userId
+  const user = await UserDB.findOne({id: userId})
+  const courses = await CourseDB.find({id: user.courses})
+
+  let myCourses = courses.map(course => {
+    let courseInfo = {}
+    courseInfo["cid"] = course.id
+    courseInfo["Name"] = course.name
+    courseInfo["courseDay"] = course.day
+    courseInfo["teacher"] = course.teacher
+    courseInfo["intro"] = course.intro
+    return courseInfo
+  })
+  return res.status(httpStatus.OK).json({results: myCourses}) 
+}
+
+export default { listCourseStatus, chooseCourse, dropCourse, getUserCourses, }

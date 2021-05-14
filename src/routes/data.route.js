@@ -12,4 +12,7 @@ router.route('/courses')
   .get(ctrl.listCourseStatus)
   .post(ctrl.chooseCourse)
 
+router.route('/myCourses')
+  .get(ctrl.getUserCourses)
+
 export default router

@@ -32,10 +32,10 @@
 
     // 利用 Ajax 發送 propfind 請求，查看該學生所選課程
     $.ajax({
-        "url"  : "/myCourses",
-        "type" : "propfind",
+        url: '/api/data/myCourses',
+        type: 'get',
         // success 的函數採用箭頭函數，這樣 this 物件就不會指向 ajax 的函數
-        "success" : mes => {
+        success: mes => {
             if(mes.results == "-2"){
                 var $divCol = $("<div class='col-lg-12' style='margin:5% 5%; width:700px'></div>");
                 $divCol.append("<h2>您目前尚未選擇課程，請前往課程頁面選擇。</h2>");

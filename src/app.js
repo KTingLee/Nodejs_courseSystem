@@ -2,8 +2,6 @@ import express from 'express'
 import session from "express-session"
 import mongoose from 'mongoose'
 
-import mainCtrl from "./controllers/mainCtrl.js"
-
 import showCtrl from './controllers/show.controller.js'
 import showRoutes from './routes/show.route.js'
 import routes from './routes/index.route.js'
@@ -34,8 +32,6 @@ function initNormal() {
   app.get('/', showCtrl.showIndex)
   app.use('/show', showRoutes)
   app.use('/api', routes)
-  
-  app.propfind("/myCourses", mainCtrl.getMyCourses);                   // 所選課程資訊
   
   // 提供靜態資料夾，這樣 public 資料夾就等同於根目路(/)
   app.use(express.static("public"))
