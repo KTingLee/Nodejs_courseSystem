@@ -35,7 +35,6 @@ function initNormal() {
   app.use('/show', showRoutes)
   app.use('/api', routes)
   
-  app.get("/checkCourses", mainCtrl.checkCourses);                   // 查看選課頁面
   app.post("/getCourse", mainCtrl.getCourse);                      // 選修課程
   app.post("/dropCourse", mainCtrl.dropCourse);                     // 退選課程
   app.get("/myCourses", mainCtrl.showMyCourses);                  // 所選課程頁面

@@ -48,10 +48,9 @@
 <script type="text/javascript">
     // 課程清單可透過 Ajax 接口獲得(路由: /coursesData)資料，再透過 jQuery 語法生成元素，並附加至課程表格中
     // 但各課程的選擇狀況會依不同學生而不同，所以要先獲得 "各課程對於學生" 的選擇狀況
-    $.get("/checkCourses", function(coursesCondition){
-
+    $.get("/api/data/courseStatus", function(coursesCondition){
         // 再製作各課程的表格
-        $.get("/coursesData", function(coursesData){
+        $.get("/api/courses", function(coursesData){
             // 遍歷 coursesData
             $.each(coursesData.rows, function(index, item){
                 // 利用 jQuery 建立元素
