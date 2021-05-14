@@ -47,44 +47,51 @@
 
 <script type="text/javascript">
     // 課程清單可透過 Ajax 接口獲得(路由: /coursesData)資料，再透過 jQuery 語法生成元素，並附加至課程表格中
-    // 但各課程的選擇狀況會依不同學生而不同，所以要先獲得 "各課程對於學生" 的選擇狀況
-    $.get("/api/data/courseStatus", function(coursesCondition){
-        // 再製作各課程的表格
-        $.get("/api/courses", function(coursesData){
-            // 遍歷 coursesData
-            $.each(coursesData.rows, function(index, item){
-                // 利用 jQuery 建立元素
-                var $tr = $("<tr></tr>");
+    // 但各課程的選擇狀況會依不同學生而不同，所以要先獲得 '各課程對於學生' 的選擇狀況
+    $.get('/api/data/courseStatus', function(courses){
+        courses.forEach(course => {
+            // 利用 jQuery 建立元素
+            const $tr = $('<tr></tr>');
+    
+            $tr.append(`<td>${course.id}</td>`)
+            $tr.append(`<td>${course.name}</td>`)
+            $tr.append(`<td>${course.day}</td>`)
+            $tr.append(`<td>${course.teacher}</td>`)
+            $tr.append(`<td>${course.allow}</td>`)
+            $tr.append(`<td>${course.member}</td>`)
+            $tr.append(`<td>${course.intro}</td>`)
+            $tr.append(`<td style='vertical-align: inherit;'>
+                            <input type='button' class='btn' value='' id='cBtn${course.id}' data-cid='${course.id}'>
+                        </td>`)
+    
+            // 將最後結果附加至表格中
+            $tr.appendTo($('#coursesTable'))
+        })
 
-                $tr.append("<td>" + item.cid + "</td>");
-                $tr.append("<td>" + item.Name + "</td>");
-                $tr.append("<td>" + item.courseDay + "</td>");
-                $tr.append("<td>" + item.teacher + "</td>");
-                $tr.append("<td>" + item.allow + "</td>");
-                $tr.append("<td>" + item.member + "</td>");
-                $tr.append("<td>" + item.intro + "</td>");
-                $tr.append("<td style='vertical-align: inherit;'><input type='button' class='btn' value='' id='cBtn" + item.cid + "' data-cid='" + item.cid + "' ></td>");
+        // 依照課程況狀，修改課程按鈕的樣式
+        courses.forEach(course => {
+            // 加上按鈕名稱
+            $(`#cBtn${course.id}`).val(course.status)
 
-                // 將最後結果附加至表格中
-                $tr.appendTo($("#coursesTable"));
-
-                // 依照課程況狀，修改課程按鈕的樣式
-                // 加上按鈕名稱
-                $("#cBtn" + item.cid).val(coursesCondition[item.cid]);
-                // 修改樣式
-                if(coursesCondition[item.cid] == "報名"){
-                    $("#cBtn" + item.cid).addClass("btn-success getCourse");
-
-                }else if(coursesCondition[item.cid] == "已選課程"){
-                    $("#cBtn" + item.cid).addClass("btn-info").attr("disabled", true);
-                    $("#cBtn" + item.cid).after($("<p><td style='vertical-align: inherit;'><input type='button' class='btn btn-danger dropCourse' value='退選課程' id='dropBtn" + item.cid + "' data-cid='" + item.cid + "' ></td>"))
-
-                }else{
-                    $("#cBtn" + item.cid).addClass("btn-secondary").attr("disabled", true);
-                }
-            })
-        });
-    })  
+            // 修改樣式
+            switch (course.status) {
+                case '報名':
+                    $(`#cBtn${course.id}`).addClass('btn-success getCourse')
+                    break
+                case '已選課程':
+                    $(`#cBtn${course.id}`).addClass('btn-info').attr('disabled', true)
+                    $(`#cBtn${course.id}`).after($(`
+                        <p><td style='vertical-align: inherit;'>
+                            <input type='button' class='btn btn-danger dropCourse' value='退選課程' id='dropBtn${item.cid}' data-cid='${item.cid}'>
+                        </td></p>`))
+                    break
+                default:
+                    $(`#cBtn${course.id}`).addClass('btn-secondary').attr('disabled', true)
+                    break;
+            }
+        })
+    })
+    
     // 監聽報名按鈕，因為是動態產生的按鈕，所以利用 delegate() 委託函數(委託父元素)
     $("#coursesTable").delegate(".getCourse", "click", function(){
         $.post("/getCourse", {
