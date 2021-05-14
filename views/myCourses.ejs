@@ -35,39 +35,49 @@
         url: '/api/data/myCourses',
         type: 'get',
         // success 的函數採用箭頭函數，這樣 this 物件就不會指向 ajax 的函數
-        success: mes => {
-            if(mes.results == "-2"){
-                var $divCol = $("<div class='col-lg-12' style='margin:5% 5%; width:700px'></div>");
-                $divCol.append("<h2>您目前尚未選擇課程，請前往課程頁面選擇。</h2>");
-                $divCol.appendTo($("#myCourses"))
-                return;
+        success: (res) => {
+            const courses = res.results
+            if (courses.length === 0) {
+                const $divCol = $(`<div class='col-lg-12' style='margin:5% 5%; width:700px'></div>`)
+                $divCol.append('<h2>您目前尚未選擇課程，請前往課程頁面選擇。</h2>')
+                $divCol.appendTo($('#myCourses'))
+                return
             }
-            $.each(mes.results, function(index, item){
-                // 利用 jQuery 建立元素
-                var $divCol = $("<div class='col-lg-6'></div>");
-                var $card = $("<div class='card'></div>");
-                var $cardBody = $("<div class='card-body'></div>");
 
+            courses.forEach(course => {
+                // 利用 jQuery 建立元素
+                const $divCol = $(`<div class='col-lg-6'></div>`)
+                const $card = $(`<div class='card'></div>`)
+                const $cardBody = $(`<div class='card-body'></div>`)
                 
-                $cardBody.append("<h5 class='card-title'>" + item.Name + "</h5>");
-                $cardBody.append("<h4>" + "開課教師：" + item.teacher + "上課時間：" + item.courseDay + "</h4>");
-                $cardBody.append("<p class='card-text'>" + item.intro + "</p>");
-                $cardBody.append("<input type='button' class='btn btn-danger dropCourse' value='退選課程' id='dropBtn" + item.cid + "' data-cid='" + item.cid + "' ></td>");
+                $cardBody.append(`<h5 class='card-title'>${item.Name}</h5>`)
+                $cardBody.append(`<h4>開課教師：${item.teacher}上課時間：${item.courseDay}</h4>`)
+                $cardBody.append(`<p class='card-text'>${item.intro}</p>`)
+                $cardBody.append(`<input type='button' class='btn btn-danger dropCourse' value='退選課程' id='dropBtn${item.cid}' data-cid='${item.cid}'></td>`)
 
                 // 將最後結果附加至表格中
                 $cardBody.appendTo($card.appendTo($divCol))
-                $divCol.appendTo($("#myCourses"));
-
+                $divCol.appendTo($('#myCourses'))
+        
                 // 修改退選按鈕樣式
-                $("#dropBtn" + item.cid).css({"position" : "absolute", "bottom" : "20px"});
+                $(`#dropBtn${item.cid}`).css({position: 'absolute', bottom: '20px'})
             })
-        }
+
+        },
     })
 
     // 監聽退選按鈕，因為是動態產生的按鈕，所以利用 delegate() 委託函數(委託父元素)
-    $("#myCourses").delegate(".dropCourse", "click", function(){
-        $.post("/dropCourse", {
-            "cid" : $(this).attr("data-cid")
+    $('#myCourses').delegate('.dropCourse', 'click', function(){
+        const courseId = $(this).attr('data-cid')
+        $.ajax({
+            type: 'delete',
+            url: `/api/data/courses/${courseId}`,
+            success: () => {
+                
+            }
+        })
+        $.post('/dropCourse', {
+            id: 
         }, function(mes){
             if(mes.results == 1){
                 alert("退選成功！")

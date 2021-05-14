@@ -95,16 +95,20 @@ async function getUserCourses(req, res, next) {
   const user = await UserDB.findOne({id: userId})
   const courses = await CourseDB.find({id: user.courses})
 
-  let myCourses = courses.map(course => {
-    let courseInfo = {}
-    courseInfo["cid"] = course.id
-    courseInfo["Name"] = course.name
-    courseInfo["courseDay"] = course.day
-    courseInfo["teacher"] = course.teacher
-    courseInfo["intro"] = course.intro
-    return courseInfo
-  })
-  return res.status(httpStatus.OK).json({results: myCourses}) 
+  try {
+    const results = courses.map(course => {
+      return {
+        id: course.id,
+        name: course.name,
+        day: course.day,
+        teacher: course.teacher,
+        intro: course.intro
+      }
+    })
+    return res.status(httpStatus.OK).json({results: results})
+  } catch(e) {
+    next(e)
+  }
 }
 
 export default { listCourseStatus, chooseCourse, dropCourse, getUserCourses, }
