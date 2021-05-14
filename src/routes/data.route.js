@@ -5,7 +5,8 @@ import ctrl from '../controllers/data.controller'
 
 const router = express.Router()
 
-router.route('/courseStatus')
+router.route('/courses')
   .get(ctrl.listCourseStatus)
+  .post(ctrl.chooseCourse)
 
 export default router

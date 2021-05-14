@@ -12,60 +12,6 @@ var Course = require("../models/course.model");
 var crypto = require("crypto");
 
 // 選修課程，前端會以 POST 傳送課程代碼，後端將會
-// 在學生的 myCourses 中，新增該課程代碼；該課程的 myStudents 也會加上該學生
-exports.getCourse = function(req, res){
-    const form  = formidable({ multiples: true , keepExtensions: true});
-    form.parse(req, (err, fields, files) => {
-        if(err){
-            res.json({"results" : -1});  // -1 表示伺服器出錯
-            return;
-        }
-        var cid = fields.cid;
-
-        // 尋找學生
-        Student.find({"stu_id" : req.session.userID}, function(err, students){
-            if(err){
-                res.json({"results" : -2});  // -2 表示資料庫
-                return;
-            }
-            var thisStudent = students[0];
-            console.log(thisStudent)
-
-            // 在學生的課程清單中，加上課程代碼
-            thisStudent.myCourses.push(cid);
-            thisStudent.save(function(err){
-                if(err){
-                    res.json({"results" : -2});  // -2 表示資料庫
-                    return;
-                }
-
-                // 尋找課程
-                Course.find({"cid" : cid}, function(err, courses){
-                    if(err){
-                        res.json({"results" : -2});  // -2 表示資料庫
-                        return;
-                    }
-                    var thisCourse = courses[0];
-
-                    // 在課程的學生清單中，加上該學生，並減少課程人數
-                    thisCourse.myStudents.push(req.session.userID);
-                    thisCourse.member--;
-                    thisCourse.save(function(err){
-                        if(err){
-                            console.log(err)
-                            res.json({"results" : -2});  // -2 表示資料庫
-                            return;
-                        }
-                        res.json({"results" : 1});
-                    })
-                })
-            })
-        })
-    })
-}
-
-
-// 選修課程，前端會以 POST 傳送課程代碼，後端將會
 // 在學生的 myCourses 中，去除該課程代碼；該課程的 myStudents 也會去除該學生
 exports.dropCourse = function(req, res){
     const form  = formidable({ multiples: true , keepExtensions: true});

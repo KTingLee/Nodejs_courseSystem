@@ -45,7 +45,28 @@ async function listCourseStatus(req, res, next) {
     }
     return course
   })
-  return res.send(courses)
+  return res.status(httpStatus.OK).json(courses)
 }
 
-export default { listCourseStatus, }
+// 選課：在學生的 courses 中，新增該課程代碼；該課程的 students 也會加上該學生
+async function chooseCourse(req, res, next) {
+  const userId = req.session.userId
+  const courseId = req.body.courseId
+
+  try {
+    const user = await UserDB.findOne({id: userId})
+    user.courses.push(courseId)
+    await user.save()
+  
+    const course = await CourseDB.findOne({id: courseId})
+    // 在課程的學生清單中，加上該學生，並減少課程人數
+    course.students.push(userId)
+    course.member--
+    await course.save()
+    return res.status(httpStatus.OK).json({data: 'ok'})
+  } catch(e) {
+    next(e)
+  }
+}
+
+export default { listCourseStatus, chooseCourse, }

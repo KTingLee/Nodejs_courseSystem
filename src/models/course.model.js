@@ -9,7 +9,7 @@ const schema = new mongoose.Schema({
   allow: [{ type: String, trim: true, enum: { values: ['國一', '國二', '國三', '高一', '高二', '高三'] } }],  // 允許年級
   teacher: String,
   intro: String,
-  myStudents: [String]
+  students: [String]
 })
 
 schema.statics = {
