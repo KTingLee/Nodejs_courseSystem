@@ -35,7 +35,6 @@ function initNormal() {
   app.use('/show', showRoutes)
   app.use('/api', routes)
   
-  app.get("/myCourses", mainCtrl.showMyCourses);                  // 所選課程頁面
   app.propfind("/myCourses", mainCtrl.getMyCourses);                   // 所選課程資訊
   
   // 提供靜態資料夾，這樣 public 資料夾就等同於根目路(/)

@@ -11,23 +11,6 @@ var Student = require("../models/Student.js");
 var Course = require("../models/course.model");
 var crypto = require("crypto");
 
-// 顯示所選課程
-exports.showMyCourses = function(req, res){
-    var userID = req.session.userID;
-    var userName = req.session.userName;
-    var grade = req.session.grade;
-
-    if(userID != undefined){
-        res.render("myCourses", {
-            "nowPage"  : "myCourses",
-            "userID"   : userID,
-            "userName" : userName,
-            "userGrade" : grade
-        });
-    }else{
-        res.redirect("/login");
-    }
-}
 
 // 獲得該學生所選課程資料
 exports.getMyCourses = function(req, res){

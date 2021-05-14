@@ -103,6 +103,19 @@ async function showUserForgetPWD(req, res, next) {
   return res.render('forgetPWD')
 }
 
+async function showUserCourses(req, res, next) {
+  const userId = req.session.userId
+  const username = req.session.username
+  const grade = req.session.grade
+  
+  return res.render('myCourses', {
+      nowPage: 'myCourses',
+      userID: userId,
+      userName: username,
+      userGrade: grade
+  })
+}
+
 export default {
   showIndex,
   showLogin, 
@@ -114,4 +127,5 @@ export default {
   showAddCourses, 
   showUserChangePWD,
   showUserForgetPWD,
+  showUserCourses,
 }
