@@ -14,4 +14,7 @@ router.route('/logout')
 router.route('/changePWD')
   .post(ctrl.changePWD)
 
+router.route('/forgetPWD')
+  .post(ctrl.forgetPWD)
+
 export default router

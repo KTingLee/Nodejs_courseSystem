@@ -45,25 +45,23 @@
 <script type="text/javascript">
     $("#sendBtn").click(function(){
         // 獲得表單中的值
-        var email  = $("#email").val();
-        var stu_id = $("#stu_id").val();
+        const email  = $("#email").val()
+        const id = $("#stu_id").val()
 
-        $.post("/forget", {
-            "email" : email,
-            "stu_id": stu_id
-        },function(mes){
-            if(mes.result == "-1"){
-                alert("伺服器錯誤...")
-            }
-            else if(mes.result == "-2"){
-                alert("學生不存在")
-            }
-            else if(mes.result == "-3"){
-                alert("信箱錯誤")
-            }
-            else{
-                alert("您的密碼已更新為：" + mes.result + "\n請妥善保管")
+        $.ajax({
+            type: 'post',
+            url: '/api/auth/forgetPWD',
+            dataType: 'json',
+            data: {
+                id: id,
+                email: email
+            },
+            success: () => {
+                alert(`您的密碼已更新，請至信箱查看。\n若無收到，可能是在垃圾郵件或信箱地址錯誤，請聯絡相關人員。`)
                 //window.location = "/login"
+            },
+            error: (msg) => {
+                alert(`出錯囉。${msg.message}`)
             }
         })
     })

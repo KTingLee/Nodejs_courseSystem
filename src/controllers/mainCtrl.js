@@ -11,50 +11,6 @@ var Student = require("../models/Student.js");
 var Course = require("../models/course.model");
 var crypto = require("crypto");
 
-// 找回密碼，前端向後端發送 post 表單
-exports.doForgetPWD = function(req, res){
-    const form  = formidable({ multiples: true , keepExtensions: true});
-    form.parse(req, (err, fields, files) => {
-        if(err){
-            res.json({"result" : -1});  // -1 表示伺服器錯誤
-            return;
-        }
-        var fieldsEmail  = fields.email;
-        var stu_id = fields.stu_id;
-
-        // 從學生資料庫檢查
-        Student.find({"stu_id" : stu_id}, function(err, results){
-            if(err){
-                res.json({"result" : -1});  // -1 表示伺服器錯誤
-                return;
-            }
-
-            if(results.length == 0){
-                res.json({"result" : -2});  // -2 表示沒有此學生
-                return;
-            }
-
-            // 學生存在，驗證信箱是否正確
-            var thisStudent = results[0];
-            var email = thisStudent.email;
-
-            // 若信箱正確，則改寫密碼，並把 initpassword 設為 true
-            if(fieldsEmail == email){
-                // 改寫學生資料
-                thisStudent.initpassword = true;
-                thisStudent.password = RandomPassword();
-                thisStudent.save();
-
-                // 向前端回傳結果
-                res.json({"result" : thisStudent.password});
-            }else{
-                res.json({"result" : -3});  // -3 表示信箱錯誤
-            }
-
-        })
-    })
-}
-
 // 隨機密碼生成函數
 const RandomPassword = function(){
     // 等等加密用的字元

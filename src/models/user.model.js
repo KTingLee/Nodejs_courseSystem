@@ -44,7 +44,7 @@ schema.statics = {
             id: student[0],
             username: student[1],
             grade: grade,
-            password: _initPassword()
+            password: this.initPassword()
           }
     
           await this.create(user)
@@ -60,17 +60,18 @@ schema.statics = {
     return match ? true : false
   },
   
+  initPassword() {
+      // 等等加密用的字元
+      const str = `ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789&%$#@!`
+      let pwd = ''
+      // 製作六位數密碼
+      for(let m = 0; m < 6; m++){
+          pwd += str.charAt(parseInt(str.length * Math.random()))
+      }
+      return pwd
+  },
+
 }
 
-function _initPassword() {
-    // 等等加密用的字元
-    const str = `ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789&%$#@!`
-    let pwd = ''
-    // 製作六位數密碼
-    for(let m = 0; m < 6; m++){
-        pwd += str.charAt(parseInt(str.length * Math.random()))
-    }
-    return pwd
-}
 
 export default mongoose.model('User', schema)

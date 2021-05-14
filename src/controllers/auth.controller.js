@@ -70,4 +70,26 @@ async function changePWD(req, res, next) {
   }
 }
 
-module.exports = { login, logout, changePWD, }
+async function forgetPWD(req, res, next) {
+  const email  = req.body.email
+  const userId = req.body.id
+
+  let user = await Model.findOne({id: userId})
+  if (!user) {
+    return res.status(httpStatus.NOT_FOUND).json({message: 'user not found'})
+  }
+
+  try {
+    const password = Model.initPassword()
+    if (email === user.email) {
+      user.initpassword = true
+      user.password = password
+      await user.save()
+    }
+    return res.status(httpStatus.OK).json({data: 'ok', message: password})
+  } catch(e) {
+    next(e)
+  }
+}
+
+module.exports = { login, logout, changePWD, forgetPWD, }
