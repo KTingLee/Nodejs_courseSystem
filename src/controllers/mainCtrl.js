@@ -67,11 +67,6 @@ exports.doChangePWD = function(req, res){
     })
 }
 
-// 忘記密碼頁面
-exports.forgetPWD = function(req, res){
-    res.render("forgetPWD")
-}
-
 // 找回密碼，前端向後端發送 post 表單
 exports.doForgetPWD = function(req, res){
     const form  = formidable({ multiples: true , keepExtensions: true});

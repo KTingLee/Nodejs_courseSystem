@@ -99,6 +99,10 @@ async function showUserChangePWD(req, res, next) {
   })
 }
 
+async function showUserForgetPWD(req, res, next) {
+  return res.render('forgetPWD')
+}
+
 export default {
   showIndex,
   showLogin, 
@@ -109,5 +113,5 @@ export default {
   showImportCourses, 
   showAddCourses, 
   showUserChangePWD,
-
+  showUserForgetPWD,
 }
