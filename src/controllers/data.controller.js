@@ -69,4 +69,25 @@ async function chooseCourse(req, res, next) {
   }
 }
 
-export default { listCourseStatus, chooseCourse, }
+// 退選：在學生的 courses 中，去除該課程代碼；該課程的 students 也會去除該學生
+async function dropCourse(req, res, next) {
+  const courseId = req.params.id
+  const userId = req.session.userId
+
+  try {
+    let user = await UserDB.findOne({id: userId})
+    user.courses = user.courses.filter(id => id !== courseId)
+    await user.save()
+    
+    let course = await CourseDB.findOne({id: courseId})
+    course.students = course.students.filter(id => id !== userId)
+    course.member++
+    await course.save()
+  
+    return res.status(httpStatus.OK).json({data: 'ok'})
+  } catch(e) {
+    next(e)
+  }
+}
+
+export default { listCourseStatus, chooseCourse, dropCourse, }

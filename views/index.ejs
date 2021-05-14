@@ -112,15 +112,17 @@
     })
 
     // 監聽退選按鈕，因為是動態產生的按鈕，所以利用 delegate() 委託函數(委託父元素)
-    $("#coursesTable").delegate(".dropCourse", "click", function(){
-        $.post("/dropCourse", {
-            "cid" : $(this).attr("data-cid")
-        }, function(mes){
-            if(mes.results == 1){
-                alert("退選成功！")
-                window.location.reload();
-            }else{
-                alert("退選失敗！")
+    $('#coursesTable').delegate('.dropCourse', 'click', function(){
+        const courseId = $(this).attr('data-cid')
+        $.ajax({
+            type: 'delete',
+            url: `/api/data/courses/${courseId}`,
+            success: () => {
+                alert('退選成功！')
+                window.location.reload()
+            },
+            error: () => {
+                alert('退選失敗！')
             }
         })
     })

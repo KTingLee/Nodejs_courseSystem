@@ -35,7 +35,6 @@ function initNormal() {
   app.use('/show', showRoutes)
   app.use('/api', routes)
   
-  app.post("/dropCourse", mainCtrl.dropCourse);                     // 退選課程
   app.get("/myCourses", mainCtrl.showMyCourses);                  // 所選課程頁面
   app.propfind("/myCourses", mainCtrl.getMyCourses);                   // 所選課程資訊
   

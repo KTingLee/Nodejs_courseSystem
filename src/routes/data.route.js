@@ -5,6 +5,9 @@ import ctrl from '../controllers/data.controller'
 
 const router = express.Router()
 
+router.route('/courses/:id')
+  .delete(ctrl.dropCourse)
+
 router.route('/courses')
   .get(ctrl.listCourseStatus)
   .post(ctrl.chooseCourse)
