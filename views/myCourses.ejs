@@ -50,17 +50,17 @@
                 const $card = $(`<div class='card'></div>`)
                 const $cardBody = $(`<div class='card-body'></div>`)
                 
-                $cardBody.append(`<h5 class='card-title'>${item.Name}</h5>`)
-                $cardBody.append(`<h4>開課教師：${item.teacher}上課時間：${item.courseDay}</h4>`)
-                $cardBody.append(`<p class='card-text'>${item.intro}</p>`)
-                $cardBody.append(`<input type='button' class='btn btn-danger dropCourse' value='退選課程' id='dropBtn${item.cid}' data-cid='${item.cid}'></td>`)
+                $cardBody.append(`<h5 class='card-title'>${course.name}</h5>`)
+                $cardBody.append(`<h4>開課教師：${course.teacher}上課時間：${course.day}</h4>`)
+                $cardBody.append(`<p class='card-text'>${course.intro}</p>`)
+                $cardBody.append(`<input type='button' class='btn btn-danger dropCourse' value='退選課程' id='dropBtn${course.id}' data-cid='${course.id}'></td>`)
 
                 // 將最後結果附加至表格中
                 $cardBody.appendTo($card.appendTo($divCol))
                 $divCol.appendTo($('#myCourses'))
         
                 // 修改退選按鈕樣式
-                $(`#dropBtn${item.cid}`).css({position: 'absolute', bottom: '20px'})
+                $(`#dropBtn${course.id}`).css({position: 'absolute', bottom: '20px'})
             })
 
         },
@@ -73,16 +73,10 @@
             type: 'delete',
             url: `/api/data/courses/${courseId}`,
             success: () => {
-                
-            }
-        })
-        $.post('/dropCourse', {
-            id: 
-        }, function(mes){
-            if(mes.results == 1){
                 alert("退選成功！")
-                window.location.reload();
-            }else{
+                window.location.reload()
+            },
+            error: () => {
                 alert("退選失敗！")
             }
         })
